@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
+
+public enum MovementState{
+    walking,
+    air
+}
+
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
@@ -21,8 +27,13 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask wahtIsGround;
     bool grounded;
 
-     [Header("KeyBinds")]
-     public KeyCode jumpkey = KeyCode.Space;
+    [Header("Slope Handling")]
+    public float maxSlopAngle;
+    private RaycastHit slopeHit;
+    private bool exitingSlope;
+
+    [Header("KeyBinds")]
+    public KeyCode jumpkey = KeyCode.Space;
 
     public Transform orientation;
 
@@ -32,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     Rigidbody rb;
+
+    public MovementState state;
+
+ 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -43,6 +58,7 @@ public class PlayerMovement : MonoBehaviour
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, wahtIsGround);
         MyInput();
         SpeedControl();
+        StateHandler();
 
         if (grounded){
             rb.drag = groundDrag;
@@ -73,6 +89,14 @@ public class PlayerMovement : MonoBehaviour
 
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
+        if(OnSlope() && !exitingSlope){
+            rb.AddForce(GetSlopeMoveDirection() * moveSpeed * 20f, ForceMode.Force);
+
+            if(rb.velocity.y >0){
+                rb.AddForce(Vector3.down * 80f, ForceMode.Force);
+            }
+        }
+
         if(grounded){
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
 
@@ -80,19 +104,30 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(moveDirection.normalized * moveSpeed * 10f * airMultoplier, ForceMode.Force);
         }
 
-        rb.AddForce(moveDirection.normalized * moveSpeed * 10f, ForceMode.Force);
+        rb.useGravity = !OnSlope();
     }
 
     private void SpeedControl(){
-        Vector3 flatvel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
-        if(flatvel.magnitude > moveSpeed){
-            Vector3 limitedvel = flatvel.normalized * moveSpeed;
-            rb.velocity = new Vector3(limitedvel.x, rb.velocity.y, limitedvel.z);
+        if(OnSlope() && !exitingSlope){
+            if (rb.velocity.magnitude > moveSpeed){
+                rb.velocity = rb.velocity.normalized * moveSpeed;
+            }
+        }else{
+            Vector3 flatvel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+            if(flatvel.magnitude > moveSpeed){
+                Vector3 limitedvel = flatvel.normalized * moveSpeed;
+                rb.velocity = new Vector3(limitedvel.x, rb.velocity.y, limitedvel.z);
+            }
+
         }
+
     }
 
     private void Jump(){
+
+        exitingSlope = true;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
@@ -100,5 +135,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void ResetJump(){
         readyToJump = true;
+        exitingSlope = false;
     }
+
+    private void StateHandler(){
+
+        if(grounded){
+            state = MovementState.walking;
+        }else{
+            state = MovementState.air;
+        }
+    }
+
+
+    private bool OnSlope(){
+        if(Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight * 0.5f + 0.3f)){
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < maxSlopAngle && angle != 0;
+        }
+
+        return false;
+    }
+
+    private Vector3 GetSlopeMoveDirection(){
+        return Vector3.ProjectOnPlane(moveDirection, slopeHit.normal).normalized;
+    }
+
+    
 }

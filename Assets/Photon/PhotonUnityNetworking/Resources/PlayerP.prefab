@@ -264,8 +264,10 @@ MonoBehaviour:
   wahtIsGround:
     serializedVersion: 2
     m_Bits: 64
+  maxSlopAngle: 0
   jumpkey: 32
   orientation: {fileID: 3231574080049856335}
+  state: 0
 --- !u!1 &3231574080049856320
 GameObject:
   m_ObjectHideFlags: 0

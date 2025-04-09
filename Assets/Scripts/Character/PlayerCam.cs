@@ -19,7 +19,15 @@ public class PlayerCam : MonoBehaviour
 
     private void Start()
     {
-        photonView = transform.root.GetComponent<PhotonView>();
+        photonView = GetComponentInParent<PhotonView>();
+
+        if (!photonView.IsMine)
+        {
+            // Desactiva la cámara si no es del jugador local
+            GetComponent<Camera>().enabled = false;
+            this.enabled = false;
+            return;
+        }
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -29,7 +37,7 @@ public class PlayerCam : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (!photonView.IsMine) return;
+        if (!photonView.IsMine) return;
 
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;

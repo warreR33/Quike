@@ -18,7 +18,7 @@ public class MoveCamera : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        //if (!photonView.IsMine) return;
+        if (!photonView.IsMine) return;
 
         transform.position = cameraPosition.position;
     }

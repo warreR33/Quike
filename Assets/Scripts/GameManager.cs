@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Instantiate(playerPrefab.name, spawnPoint.position, spawnPoint.rotation);
 
+
             Debug.Log($"Jugador instanciado como {PhotonNetwork.NickName}");
         }
         else

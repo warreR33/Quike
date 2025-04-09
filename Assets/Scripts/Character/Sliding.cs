@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+
 
 public class Sliding : MonoBehaviour
 {
+    private PhotonView photonView;
+
     [Header("References")]
     public Transform orientation;
     public Transform playerObj;
@@ -26,6 +30,8 @@ public class Sliding : MonoBehaviour
 
     private void Start()
     {
+        photonView = GetComponentInParent<PhotonView>();
+
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
 
@@ -34,6 +40,8 @@ public class Sliding : MonoBehaviour
 
     private void Update()
     {
+        if (!photonView.IsMine) return;
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -46,6 +54,8 @@ public class Sliding : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
+
         if (pm.sliding)
             SlidingMovement();
     }

@@ -11,6 +11,7 @@ public class Projectile : MonoBehaviourPun
 
     private void Start()
     {
+        //Destruimos el objeto si no toco nada en un tiempo
         Destroy(gameObject, lifetime);
     }
 

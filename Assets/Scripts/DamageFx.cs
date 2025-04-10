@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -8,32 +7,52 @@ using Photon.Pun;
 public class DamageFx : MonoBehaviourPun
 {
     public Image damageImage;
-    public float flashSpeed = 5f;
+
+    public float flashDuration = 0.2f;
     public Color flashColor = new Color(1f, 0f, 0f, 0.4f);
 
-    private bool damaged;
 
-    void Update()
+
+    private Coroutine flashCoroutine;
+
+
+
+    private void Start()
     {
-        if (!photonView.IsMine) return;
-
-        if (damaged)
+        //Si el objeto no es del jugador local, lo desactiva completamente asi no mostramos efectos en los demas players
+        if (!photonView.IsMine)
         {
-            damageImage.color = flashColor;
+            gameObject.SetActive(false);
         }
-        else
+        //Si es el nuestro reseteamos el color de la imagen por las
+        else if (damageImage != null)
         {
-            damageImage.color = Color.Lerp(damageImage.color, Color.clear, flashSpeed * Time.deltaTime);
+            damageImage.color = Color.clear;
         }
-
-        damaged = false; 
     }
 
+    //la llamamos cuando recibimos daño desde PlayerHealth
     public void ShowDamage()
     {
+        //evita que el enemigo vea el flash de otro jugador
         if (!photonView.IsMine) return;
 
-        damaged = true;
+        //Si esta en curso la resetea
+        if (flashCoroutine != null)
+        {
+            StopCoroutine(flashCoroutine);
+
+        }
+
+        flashCoroutine = StartCoroutine(Flash());
+    }
+
+
+
+    private IEnumerator Flash()
+    {
+        damageImage.color = flashColor;
+        yield return new WaitForSeconds(flashDuration);
+        damageImage.color = Color.clear;
     }
 }
-

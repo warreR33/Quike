@@ -12,10 +12,10 @@ public class PlayerCam : MonoBehaviour
     public float sensY;
 
     public Transform orientation;
+    public Transform playerBody;
 
     float xRotation;
     float yRotation;
-
 
     private void Start()
     {
@@ -23,8 +23,15 @@ public class PlayerCam : MonoBehaviour
 
         if (!photonView.IsMine)
         {
-            // Desactiva la cámara si no es del jugador local
             GetComponent<Camera>().enabled = false;
+
+            //Asi solo la cam local tiene un audiolistener activo 
+            AudioListener audioListener = GetComponent<AudioListener>();
+            if (audioListener != null)
+            {
+                audioListener.enabled = false;
+            }
+
             this.enabled = false;
             return;
         }
@@ -33,8 +40,6 @@ public class PlayerCam : MonoBehaviour
         Cursor.visible = false;
     }
 
-
-    // Update is called once per frame
     void Update()
     {
         if (!photonView.IsMine) return;
@@ -44,10 +49,13 @@ public class PlayerCam : MonoBehaviour
 
         yRotation += mouseX;
         xRotation -= mouseY;
-
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+
+        //Rotamos el cuerpo
         orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+        playerBody.rotation = Quaternion.Euler(0, yRotation, 0); 
     }
 }
+

@@ -27,15 +27,9 @@ public class Shooter : MonoBehaviour
         if (Input.GetMouseButton(0) && Time.time - lastShotTime > fireRate)
         {
             lastShotTime = Time.time;
-            photonView.RPC("RPC_Shoot", RpcTarget.All);
+            PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, shootPoint.rotation);
         }
     }
 
-    [PunRPC]
-    void RPC_Shoot()
-    {
-        //GameObject bullet = Instantiate(projectilePrefab, shootPoint.position, shootPoint.rotation);
-        PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, shootPoint.rotation);
-    }
 }
 

@@ -94,6 +94,7 @@ public class PlayerMovement : MonoBehaviour
         SpeedControl();
         StateHandler();
 
+      
         // handle drag
         if (grounded)
             rb.drag = groundDrag;

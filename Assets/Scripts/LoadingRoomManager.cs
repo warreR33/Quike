@@ -9,7 +9,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private TextMeshProUGUI playersListText;
     [SerializeField] private TextMeshProUGUI countdownText;
 
-    private const float totalCountdownTime = 20f;
+    private const float totalCountdownTime = 2f;
     private bool countdownStarted = false;
     private double startTime;
     private bool joinedRoom = false;

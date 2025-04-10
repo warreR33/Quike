@@ -73,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        photonView = GetComponentInParent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
 
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;

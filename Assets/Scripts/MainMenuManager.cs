@@ -23,7 +23,8 @@ public class MainMenuManager : MonoBehaviour
 
         if (string.IsNullOrEmpty(playerName))
         {
-            Debug.LogWarning("El nombre no puede estar vacío.");
+            //Cambiar por error en pantalla
+            Debug.LogWarning("El nombre no puede estar vacio");
             return;
         }
 
@@ -33,7 +34,7 @@ public class MainMenuManager : MonoBehaviour
         PlayerPrefs.SetString("PlayerName", playerName);
 
 
-        //Carga Pantalla de Juego
+        //Carga Pantalla de lobby
         SceneManager.LoadScene("LoadingScene");
     }
 }

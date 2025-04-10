@@ -30,7 +30,7 @@ public class Sliding : MonoBehaviour
 
     private void Start()
     {
-        photonView = GetComponentInParent<PhotonView>();
+        photonView = GetComponent<PhotonView>();
 
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();

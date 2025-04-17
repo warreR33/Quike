@@ -222,6 +222,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
+        if (GetComponent<LadderClimbing>()?.isClimbing == true)
+            return; // Si estamos escalando, no movemos normal.
+
         // calculate movement direction
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 

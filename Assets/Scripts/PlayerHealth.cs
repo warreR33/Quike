@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System;
+using TMPro;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviourPun, IDamageable
 {
@@ -11,7 +13,9 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     [SerializeField] private DamageFx damageFx;
 
-
+    [Header("UI References")]
+    [SerializeField] private Slider healthSlider;
+    [SerializeField] private TextMeshProUGUI healthText;
 
     private void Start()
     {
@@ -21,6 +25,17 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         {
             damageFx = GetComponentInChildren<DamageFx>();
           
+        }
+        // Inicializamos el slider y texto
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
+
+        if (healthText != null)
+        {
+            healthText.text = $"{currentHealth}/{maxHealth}";
         }
     }
 
@@ -60,6 +75,9 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         Debug.Log($"Vida restante: {currentHealth}");
 
+        UpdateHealthUI();
+
+
         if (currentHealth <= 0)
         {
             Die();
@@ -70,5 +88,21 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     {
         Debug.Log("Estoy muerto");
         PhotonNetwork.Destroy(gameObject);
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (photonView.IsMine)
+        {
+            if (healthSlider != null)
+            {
+                healthSlider.value = currentHealth;
+            }
+
+            if (healthText != null)
+            {
+                healthText.text = $"{currentHealth}/{maxHealth}";
+            }
+        }
     }
 }

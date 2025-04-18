@@ -15,7 +15,6 @@ public class MoveCamera : MonoBehaviour
         photonView = GetComponentInParent<PhotonView>();
 
     }
-    // Update is called once per frame
     private void Update()
     {
         if (!photonView.IsMine) return;

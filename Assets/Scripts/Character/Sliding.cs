@@ -81,8 +81,6 @@ public class Sliding : MonoBehaviour
 
             slideTimer -= Time.deltaTime;
         }
-
-        // sliding down a slope
         else
         {
             rb.AddForce(pm.GetSlopeMoveDirection(inputDirection) * slideForce, ForceMode.Force);

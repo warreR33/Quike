@@ -25,7 +25,6 @@ public class PlayerCam : MonoBehaviour
         {
             GetComponent<Camera>().enabled = false;
 
-            //Asi solo la cam local tiene un audiolistener activo 
             AudioListener audioListener = GetComponent<AudioListener>();
             if (audioListener != null)
             {
@@ -53,7 +52,6 @@ public class PlayerCam : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
 
-        //Rotamos el cuerpo
         orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         playerBody.rotation = Quaternion.Euler(0, yRotation, 0); 
     }

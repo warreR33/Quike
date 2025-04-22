@@ -17,19 +17,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TextMeshProUGUI healthText;
 
-    private void Awake()
-    {
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
-        }
 
-        if (healthText != null)
-        {
-            healthText.text = $"{currentHealth}/{maxHealth}";
-        }
-    }
 
     private void Start()
     {
@@ -40,16 +28,18 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             damageFx = GetComponentInChildren<DamageFx>();
 
         }
-        //if (healthSlider != null)
-        //{
-        //    healthSlider.maxValue = maxHealth;
-        //    healthSlider.value = currentHealth;
-        //}
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
 
-        //if (healthText != null)
-        //{
-        //    healthText.text = $"{currentHealth}/{maxHealth}";
-        //}
+        if (healthText != null)
+        {
+            healthText.text = $"{currentHealth}/{maxHealth}";
+        }
+
+        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage, int attackerViewID)

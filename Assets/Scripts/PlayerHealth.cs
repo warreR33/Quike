@@ -27,17 +27,20 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         {
             damageFx = GetComponentInChildren<DamageFx>();
 
-        }
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
+            if (healthSlider != null)
+            {
+                healthSlider.maxValue = maxHealth;
+                healthSlider.value = currentHealth;
+            }
+
+            if (healthText != null)
+            {
+                healthText.text = $"{currentHealth}/{maxHealth}";
+            }
+
+            UpdateHealthUI();
         }
 
-        if (healthText != null)
-        {
-            healthText.text = $"{currentHealth}/{maxHealth}";
-        }
 
     }
 
@@ -103,7 +106,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         
         if (photonView.IsMine)
         {
-            UpdateHealthUI();
             GameManager.Instance.SpawnPlayerAfterDead();
             PhotonNetwork.Destroy(gameObject);
         }

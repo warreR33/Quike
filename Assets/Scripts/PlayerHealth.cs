@@ -39,7 +39,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             healthText.text = $"{currentHealth}/{maxHealth}";
         }
 
-        UpdateHealthUI();
     }
 
     public void TakeDamage(int damage, int attackerViewID)

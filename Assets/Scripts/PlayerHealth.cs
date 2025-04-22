@@ -37,8 +37,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             {
                 healthText.text = $"{currentHealth}/{maxHealth}";
             }
-
-            UpdateHealthUI();
         }
 
 
@@ -75,7 +73,10 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     {
         currentHealth -= damage;
 
-        UpdateHealthUI();
+        if (photonView.IsMine)
+        {
+            UpdateHealthUI();
+        }
 
 
         if (currentHealth <= 0)

@@ -123,7 +123,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_EndGame()
     {
-        PhotonNetwork.Disconnect();
+        //PhotonNetwork.Disconnect();
         PhotonNetwork.LoadLevel("MainMenu");
         //StartCoroutine(DisconnectAndLoadMenu());
     }

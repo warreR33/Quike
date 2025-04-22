@@ -36,7 +36,6 @@ public class Projectile : MonoBehaviourPun
         {
             //Se dana y se pasa autor
             damageable.TakeDamage(damage, attackerActorNumber);
-            //Debug.Log("Projectil lanzado por: " + photonView.ViewID);
             PhotonNetwork.Destroy(gameObject);
         }
         else if (!other.isTrigger)

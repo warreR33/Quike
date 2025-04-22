@@ -17,15 +17,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TextMeshProUGUI healthText;
 
-    private void Start()
+    private void Awake()
     {
-        currentHealth = maxHealth;
-
-        if (photonView.IsMine)
-        {
-            damageFx = GetComponentInChildren<DamageFx>();
-          
-        }
         if (healthSlider != null)
         {
             healthSlider.maxValue = maxHealth;
@@ -38,25 +31,46 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         }
     }
 
-    public void TakeDamage(float damage)
+    private void Start()
+    {
+        currentHealth = maxHealth;
+
+        if (photonView.IsMine)
+        {
+            damageFx = GetComponentInChildren<DamageFx>();
+
+        }
+        //if (healthSlider != null)
+        //{
+        //    healthSlider.maxValue = maxHealth;
+        //    healthSlider.value = currentHealth;
+        //}
+
+        //if (healthText != null)
+        //{
+        //    healthText.text = $"{currentHealth}/{maxHealth}";
+        //}
+    }
+
+    public void TakeDamage(int damage, int attackerViewID)
     {
         if (photonView.IsMine)
         {
-            ApplyDamage(damage);
+            ApplyDamage(damage, attackerViewID);
 
             if (damageFx != null)
                 damageFx.ShowDamage();
         }
         else
         {
-            photonView.RPC("RPC_ApplyDamage", photonView.Owner, damage);
+            photonView.RPC("RPC_ApplyDamage", photonView.Owner, damage, attackerViewID);
         }
     }
 
     [PunRPC]
-    void RPC_ApplyDamage(float damage)
+    void RPC_ApplyDamage(int damage, int attackerViewID)
     {
-        ApplyDamage(damage);
+        ApplyDamage(damage, attackerViewID);
 
         if (photonView.IsMine && damageFx != null)
             damageFx.ShowDamage();
@@ -65,26 +79,50 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
 
 
-    private void ApplyDamage(float damage)
+    private void ApplyDamage(int damage, int attackerViewID)
     {
         currentHealth -= damage;
-
-        Debug.Log($"Vida restante: {currentHealth}");
 
         UpdateHealthUI();
 
 
         if (currentHealth <= 0)
         {
+            PhotonView attackerView = PhotonView.Find(attackerViewID);
+
+            if (attackerView != null)
+            {
+                int attackerActorNr = attackerView.OwnerActorNr;
+
+                //Sincronizamos kills
+                GameManager.Instance.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
+
+
+            }
+
+            //Sincronizamos Deaths
+            GameManager.Instance.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
+
             Die();
         }
     }
 
+
     private void Die()
     {
-        Debug.Log("Estoy muerto");
-        PhotonNetwork.Destroy(gameObject);
+
+        
+        if (photonView.IsMine)
+        {
+            UpdateHealthUI();
+            GameManager.Instance.SpawnPlayerAfterDead();
+            PhotonNetwork.Destroy(gameObject);
+        }
+   
+
     }
+
+   
 
     private void UpdateHealthUI()
     {

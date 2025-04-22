@@ -19,10 +19,11 @@ public class DamageFx : MonoBehaviourPun
 
     private void Start()
     {
-        //Si el objeto no es del jugador local, lo desactiva completamente asi no mostramos efectos en los demas players
+        
+        //Si no es el jugador local no hacemos nada
         if (!photonView.IsMine)
         {
-            gameObject.SetActive(false);
+            return;
         }
         //Si es el nuestro reseteamos el color de la imagen por las
         else if (damageImage != null)
@@ -34,15 +35,15 @@ public class DamageFx : MonoBehaviourPun
     //la llamamos cuando recibimos daño desde PlayerHealth
     public void ShowDamage()
     {
-        //evita que el enemigo vea el flash de otro jugador
         if (!photonView.IsMine) return;
 
-        //Si esta en curso la resetea
-        if (flashCoroutine != null)
+        if (damageImage == null || !damageImage.gameObject.activeInHierarchy)
         {
-            StopCoroutine(flashCoroutine);
-
+            return;
         }
+
+        if (flashCoroutine != null)
+            StopCoroutine(flashCoroutine);
 
         flashCoroutine = StartCoroutine(Flash());
     }

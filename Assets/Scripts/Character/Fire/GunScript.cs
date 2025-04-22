@@ -27,7 +27,7 @@ public class GunScript : MonoBehaviour
             
             PlayerHealth target = hit.transform.GetComponent<PlayerHealth>();
             if(target != null){
-                target.TakeDamage(damage);
+                //target.TakeDamage(damage);
             }
         }
     }

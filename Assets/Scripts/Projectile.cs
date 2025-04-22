@@ -9,6 +9,8 @@ public class Projectile : MonoBehaviourPun
     public int damage = 100;
     public float lifetime = 5f;
 
+    private int attackerActorNumber;
+
     private void Start()
     {
         //Destruimos el objeto si no toco nada en un tiempo
@@ -20,6 +22,11 @@ public class Projectile : MonoBehaviourPun
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
     }
 
+    public void SetAttacker(int actorNumber)
+    {
+        attackerActorNumber = actorNumber;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
 
@@ -27,7 +34,9 @@ public class Projectile : MonoBehaviourPun
 
         if (other.TryGetComponent(out IDamageable damageable))
         {
-            damageable.TakeDamage(damage);
+            //Se dana y se pasa autor
+            damageable.TakeDamage(damage, attackerActorNumber);
+            //Debug.Log("Projectil lanzado por: " + photonView.ViewID);
             PhotonNetwork.Destroy(gameObject);
         }
         else if (!other.isTrigger)

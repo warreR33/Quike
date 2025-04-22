@@ -42,6 +42,9 @@ MonoBehaviour:
   - RPC_StartCountdown
   - RPC_Shoot
   - RPC_ApplyDamage
+  - RPC_EndGame
+  - RPC_AddDeath
+  - RPC_AddKill
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

@@ -50,7 +50,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     {
 
         Debug.Log("Unido a la sala: " + PhotonNetwork.CurrentRoom.Name);
-        Debug.Log("Cantidad de jugadores en la sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
+        //Debug.Log("Cantidad de jugadores en la sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
 
 
         joinedRoom = true;

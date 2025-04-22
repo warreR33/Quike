@@ -27,7 +27,11 @@ public class Shooter : MonoBehaviour
         if (Input.GetMouseButton(0) && Time.time - lastShotTime > fireRate)
         {
             lastShotTime = Time.time;
-            PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, shootPoint.rotation);
+           
+
+            GameObject projectile = PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, shootPoint.rotation);
+            projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
+
         }
     }
 

@@ -123,6 +123,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_EndGame()
     {
+        PhotonNetwork.Disconnect();
         PhotonNetwork.LoadLevel("MainMenu");
         //StartCoroutine(DisconnectAndLoadMenu());
     }
@@ -198,7 +199,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 300, Screen.height));
+        GUILayout.BeginArea(new Rect(10, 10, 600, Screen.height));
         GUILayout.Label("<b><size=26>DEBUG - STATS</size></b>");
 
         EnsureAllPlayersRegistered();

@@ -38,9 +38,16 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                 healthText.text = $"{currentHealth}/{maxHealth}";
             }
         }
-
-
+        else
+        {
+            // Desactivar UI en instancias que no son nuestras
+            if (healthSlider != null)
+                healthSlider.gameObject.SetActive(false);
+            if (healthText != null)
+                healthText.gameObject.SetActive(false);
+        }
     }
+
 
     public void TakeDamage(int damage, int attackerViewID)
     {

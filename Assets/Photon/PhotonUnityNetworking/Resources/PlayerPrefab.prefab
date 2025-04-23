@@ -1602,7 +1602,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7230477337405848246}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 49ee2bfb40268dd45b84b4ce64c38bcb, type: 3}
   m_Name: 
@@ -1629,6 +1629,8 @@ MonoBehaviour:
   grenadePrefab: {fileID: 3738712493087328731, guid: 9c07e4e02970b794a95885300cc8759c, type: 3}
   pistolModel: {fileID: 6177538088672101750}
   grenadeLauncherModel: {fileID: 8270006884858353568}
+  pistolModelTransform: {fileID: 6841203704906866636}
+  grenadeLauncherModelTransform: {fileID: 8759263637324172570}
   shootPoint: {fileID: 5066685322834380378}
   playerCamera: {fileID: 7230477337348191936}
   crosshairImage: {fileID: 4129811197717479615}
@@ -1921,6 +1923,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 7345498eca526fe43b089e91874a3cda, type: 3}
   m_PrefabInstance: {fileID: 6447588929719908391}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2191148102452559002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6177538088672101750}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16289d7e50a2e93488dcf1a421d88996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swayAmount: 8
 --- !u!4 &6841203704906866636 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 7345498eca526fe43b089e91874a3cda, type: 3}
@@ -2004,6 +2019,19 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: f13ce4353ccc20d4084f22553f86218f, type: 3}
   m_PrefabInstance: {fileID: 9080838650371599089}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3745463970073292876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8270006884858353568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 16289d7e50a2e93488dcf1a421d88996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  swayAmount: 8
 --- !u!4 &8759263637324172570 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: f13ce4353ccc20d4084f22553f86218f, type: 3}

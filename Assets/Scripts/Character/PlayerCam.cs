@@ -8,6 +8,10 @@ public class PlayerCam : MonoBehaviour
 {
     private PhotonView photonView;
 
+    public MeshRenderer playerBodyRenderer;
+    public MeshRenderer playerEye1Renderer;
+    public MeshRenderer playerEye2Renderer;
+
     public float sensX;
     public float sensY;
 
@@ -19,13 +23,26 @@ public class PlayerCam : MonoBehaviour
 
     private void Start()
     {
+
         photonView = GetComponentInParent<PhotonView>();
 
-        if (!photonView.IsMine)
+        //Evitar Clipping cuerpo propio
+        if (photonView.IsMine)
         {
+            if (playerBodyRenderer != null || playerEye1Renderer != null || playerEye2Renderer != null)
+            {
+                playerEye1Renderer.enabled = false;
+                playerEye2Renderer.enabled = false;
+                playerBodyRenderer.enabled = false;  
+            }
+        }
+        else
+        {
+            //Si no es el jugador local ocultamos camara y audiolistener
             GetComponent<Camera>().enabled = false;
 
             AudioListener audioListener = GetComponent<AudioListener>();
+
             if (audioListener != null)
             {
                 audioListener.enabled = false;

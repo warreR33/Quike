@@ -29,7 +29,7 @@ public class Shooter : MonoBehaviour
 
         //Cambiar color de la mira si apunta a enemigo
         Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-        if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+        if (Physics.Raycast(ray, out RaycastHit hit, 30f))
         {
             if (crosshairImage && hit.collider.GetComponent<IDamageable>() != null)
                 crosshairImage.color = Color.red;
@@ -50,7 +50,7 @@ public class Shooter : MonoBehaviour
             }
             else
             {
-                targetPoint = ray.origin + ray.direction * 100f;
+                targetPoint = ray.origin + ray.direction * 30f;
             }
 
             Vector3 direction = (targetPoint - shootPoint.position).normalized;

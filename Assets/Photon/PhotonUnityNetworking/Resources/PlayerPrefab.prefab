@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1337218720659106256}
   - component: {fileID: 8918767973159350471}
   - component: {fileID: 3363015334087001420}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Eye (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -986,7 +986,7 @@ GameObject:
   - component: {fileID: 5154940797015771614}
   - component: {fileID: 5513528482409135572}
   - component: {fileID: 5429574939088915631}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Eye (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1006,7 +1006,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7230477336939275641}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &5513528482409135572
 MeshFilter:
@@ -1248,7 +1248,7 @@ GameObject:
   - component: {fileID: 7230477336939275641}
   - component: {fileID: 7230477336939275646}
   - component: {fileID: 7230477336939275647}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1268,8 +1268,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1337218720659106256}
-  - {fileID: 7230477337653691995}
   - {fileID: 5154940797015771614}
+  - {fileID: 7230477337653691995}
   m_Father: {fileID: 7230477337405848244}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1350,7 +1350,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7230477337348191938}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.39}
+  m_LocalPosition: {x: 0, y: 0, z: -0.096}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1388,7 +1388,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 759
+    m_Bits: 1783
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1420,6 +1420,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 830089507f8edf54ca245de851bc30a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerBodyRenderer: {fileID: 7230477336939275647}
+  playerEye1Renderer: {fileID: 3363015334087001420}
+  playerEye2Renderer: {fileID: 5429574939088915631}
   sensX: 600
   sensY: 600
   orientation: {fileID: 7230477337653691995}
@@ -1667,7 +1670,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7230477337653691995}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1688,7 +1691,7 @@ Transform:
   m_Children:
   - {fileID: 5066685322834380378}
   m_Father: {fileID: 7230477336939275641}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7460696687207330307
 GameObject:
@@ -1812,7 +1815,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5066685322834380378}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: ShootPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}

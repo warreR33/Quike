@@ -34,18 +34,18 @@ public class GrenadeProjectile : MonoBehaviourPun
         {
             Explode(); 
         }
-        else
-        {
-            // Rebote automático gracias al Rigidbody + Physics Material
-            // Podés ajustar el bounciness/friction en el material del collider
-        }
+   
     }
 
     IEnumerator ExplodeAfterDelay()
     {
         yield return new WaitForSeconds(lifeTime);
+
         if (!hasExploded)
+        {
             Explode();
+
+        }
     }
 
     void Explode()
@@ -57,7 +57,7 @@ public class GrenadeProjectile : MonoBehaviourPun
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
-        if (PhotonNetwork.IsMasterClient)
+        if (photonView.IsMine)
         {
             Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
             foreach (Collider col in colliders)

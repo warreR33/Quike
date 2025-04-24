@@ -17,10 +17,13 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [SerializeField] private Slider healthSlider;
     [SerializeField] private TextMeshProUGUI healthText;
 
+    private GameManager gameManager;
 
 
     private void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
+
         currentHealth = maxHealth;
 
         if (photonView.IsMine)
@@ -95,13 +98,15 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                 int attackerActorNr = attackerView.OwnerActorNr;
 
                 //Sincronizamos kills
-                GameManager.Instance.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
+                gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
 
 
             }
 
             //Sincronizamos Deaths
-            GameManager.Instance.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
+            //GameManager.Instance.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
+            gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
+
 
             Die();
         }
@@ -114,7 +119,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         
         if (photonView.IsMine)
         {
-            GameManager.Instance.SpawnPlayerAfterDead();
+            gameManager.SpawnPlayerAfterDead();
             PhotonNetwork.Destroy(gameObject);
         }
    

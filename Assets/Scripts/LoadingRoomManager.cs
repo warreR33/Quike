@@ -3,11 +3,16 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class LoadingRoomManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private TextMeshProUGUI playersListText;
     [SerializeField] private TextMeshProUGUI countdownText;
+
+    [SerializeField] private Button exitButton;
+
 
     private const float totalCountdownTime = 5f;
     private bool countdownStarted = false;
@@ -23,19 +28,29 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (!PhotonNetwork.IsConnected)
+        exitButton.onClick.AddListener(OnClickExit);
+
+
+        if (!PhotonNetwork.IsConnected || PhotonNetwork.NetworkClientState == ClientState.Disconnected)
         {
-            PhotonNetwork.GameVersion = "1.0";
+            Debug.Log("Reconectando a Photon...");
             PhotonNetwork.ConnectUsingSettings();
         }
+        else
+        {
+            Debug.Log("Ya conectado, uniendo a sala...");
+            JoinMainRoom();
+        }
     }
-
-
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Conectado al Master");
+        JoinMainRoom();
+    }
 
+    private void JoinMainRoom()
+    {
         RoomOptions roomOptions = new RoomOptions
         {
             MaxPlayers = 4,
@@ -46,22 +61,47 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinOrCreateRoom("SalaPrincipal", roomOptions, TypedLobby.Default);
     }
 
+
+
     public override void OnJoinedRoom()
     {
 
         Debug.Log("Unido a la sala: " + PhotonNetwork.CurrentRoom.Name);
-        //Debug.Log("Cantidad de jugadores en la sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
 
 
         joinedRoom = true;
 
         UpdatePlayerListUI();
 
-        if (PhotonNetwork.IsMasterClient)
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
         {
             //Arrancamos despues de un segundo para evitar problemas
             StartCoroutine(StartCountdownAfterDelay(1f));
+
         }
+    }
+
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+       
+            Debug.LogError("Fallo al unirse a la sala: " + message);
+            Debug.LogError("Se redirige a MainMenu");
+        SceneManager.LoadScene("MainMenu");
+
+
+    }
+
+    private void OnClickExit()
+    {
+
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Saliste de la sala");
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void Update()
@@ -80,6 +120,11 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
             if (PhotonNetwork.IsMasterClient)
             {
+                //Cerramos la sala
+                PhotonNetwork.CurrentRoom.IsOpen = false;
+                PhotonNetwork.CurrentRoom.IsVisible = false;
+                Debug.Log("Se cierra la sala");
+
                 PhotonNetwork.LoadLevel("GameScene");
             }
         }
@@ -88,6 +133,12 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         UpdatePlayerListUI();
+
+        //Si esta el master mas un jugador empieza el conteo
+        if (PhotonNetwork.IsMasterClient && !countdownStarted && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        {
+            StartCoroutine(StartCountdownAfterDelay(1f));
+        }
 
         if (PhotonNetwork.IsMasterClient && countdownStarted)
         {
@@ -99,6 +150,13 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         UpdatePlayerListUI();
+
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount <= 1)
+        {
+            countdownStarted = false;
+            countdownText.text = "Esperando mas jugadores...";
+            Debug.Log("Se cancelo la cuenta regresiva, queda un solo jugador");
+        }
     }
 
     private void UpdatePlayerListUI()
@@ -129,4 +187,6 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         startTime = networkStartTime;
         countdownStarted = true;
     }
+
+  
 }

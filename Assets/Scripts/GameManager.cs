@@ -3,30 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using UnityEngine.SceneManagement;
 
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    public static GameManager Instance;
+    //public static GameManager Instance;
+
+    [SerializeField] private GameObject gameEndUIPrefab;
+    private GameObject gameEndUIInstance;
 
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private int maxGameKills= 2;
 
+    //Pequena clase para guardar los datos de partida de cada player
+    [System.Serializable] public class PlayerStatsData
+    {
+        public int kills;
+        public int deaths;
+    }
+
     //Stats por jugador
     private Dictionary<int, PlayerStatsData> playerStats = new Dictionary<int, PlayerStatsData>();
 
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-    }
+    //private void Awake()
+    //{
+    //    if (Instance == null) Instance = this;
+    //}
 
     private void Start()
     {
+        Debug.Log("Cantidad de jugadores en la sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
+
         PhotonNetwork.AutomaticallySyncScene = true;
+
 
         if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
         {
-            //RegisterPlayer(PhotonNetwork.LocalPlayer);
 
             //Registramos a todos los jugadores
             foreach (var player in PhotonNetwork.PlayerList)
@@ -43,7 +56,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    //Quitar de la lista los player que se desconecten
+    //Quitamos de la lista los player que se desconecten
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         if (playerStats.ContainsKey(otherPlayer.ActorNumber))
@@ -60,20 +73,17 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    //public void AddKill(int actorNumber)
-    //{
-    //    if (playerStats.ContainsKey(actorNumber))
-    //    {
-    //        playerStats[actorNumber].kills++;
 
-    //        Debug.Log($"Kills de {PhotonNetwork.CurrentRoom.GetPlayer(actorNumber).NickName}: {playerStats[actorNumber].kills}");
 
-    //        if (playerStats[actorNumber].kills >= 10)
-    //        {
-    //            WinGame(actorNumber);
-    //        }
-    //    }
-    //}
+
+    [PunRPC]
+    public void RPC_AddDeath(int actorNumber)
+    {
+        if (!playerStats.ContainsKey(actorNumber))
+            RegisterPlayer(PhotonNetwork.CurrentRoom.GetPlayer(actorNumber));
+
+        playerStats[actorNumber].deaths++;
+    }
 
     [PunRPC]
     public void RPC_AddKill(int actorNumber)
@@ -83,7 +93,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         playerStats[actorNumber].kills++;
 
-        Debug.Log($"[RPC] Kills de {PhotonNetwork.CurrentRoom.GetPlayer(actorNumber).NickName}: {playerStats[actorNumber].kills}");
 
         if (playerStats[actorNumber].kills >= maxGameKills)
         {
@@ -91,53 +100,70 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    [PunRPC]
-    public void RPC_AddDeath(int actorNumber)
-    {
-        if (!playerStats.ContainsKey(actorNumber))
-            RegisterPlayer(PhotonNetwork.CurrentRoom.GetPlayer(actorNumber));
-
-        playerStats[actorNumber].deaths++;
-        Debug.Log($"[RPC] Deaths de {PhotonNetwork.CurrentRoom.GetPlayer(actorNumber).NickName}: {playerStats[actorNumber].deaths}");
-    }
-    //public void AddDeath(int actorNumber)
-    //{
-    //    if (playerStats.ContainsKey(actorNumber))
-    //    {
-    //        playerStats[actorNumber].deaths++;
-    //        Debug.Log($"Muertes de {PhotonNetwork.CurrentRoom.GetPlayer(actorNumber).NickName}: {playerStats[actorNumber].deaths}");
-    //    }
-    //}
-
     private void WinGame(int actorNumber)
     {
         string winnerName = PhotonNetwork.CurrentRoom.GetPlayer(actorNumber).NickName;
-        Debug.Log($"{winnerName} ganó la partida!");
-        //PhotonNetwork.LoadLevel("VictoryScene");
 
-
-        photonView.RPC("RPC_EndGame", RpcTarget.AllBufferedViaServer);
+        photonView.RPC("RPC_EndGame", RpcTarget.All, winnerName);
 
     }
 
     [PunRPC]
-    private void RPC_EndGame()
+    private void RPC_EndGame(string winnerName)
     {
-        //PhotonNetwork.Disconnect();
-        PhotonNetwork.LoadLevel("MainMenu");
-        //StartCoroutine(DisconnectAndLoadMenu());
+
+
+        ////Pausamos juego
+        Time.timeScale = 0f;
+
+        ////Mostrar UI victoria
+        ShowGameEndUI(winnerName);
+
+        ////Esperar y cargar MainMenu
+        StartCoroutine(BackToMainMenuAfterDelay(5f));
+
     }
 
-    private IEnumerator DisconnectAndLoadMenu()
+    private void ShowGameEndUI(string winnerName)
     {
-        PhotonNetwork.Disconnect();
 
-        while (PhotonNetwork.IsConnected)
-        {
+        gameEndUIInstance = Instantiate(gameEndUIPrefab);
+
+        TMPro.TextMeshProUGUI[] winnerText = gameEndUIInstance.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
+        if (winnerText.Length > 0)
+            winnerText[0].text = $"{winnerName} has won!";
+    }
+
+    private IEnumerator BackToMainMenuAfterDelay(float seconds)
+    {
+
+
+        PhotonNetwork.AutomaticallySyncScene = false;
+
+        if (PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
+
+        while (PhotonNetwork.InRoom)
             yield return null;
+
+        float t = seconds;
+
+        // Contador regresivo en texto (opcional)
+        TMPro.TextMeshProUGUI countdownText = gameEndUIInstance?.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+        while (t > 0)
+        {
+            if (countdownText != null)
+                countdownText.text = $"Going back to menu in {Mathf.CeilToInt(t)}s...";
+            yield return new WaitForSecondsRealtime(1f);
+            t -= 1f;
         }
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+
+      
+
+
+        
+        SceneManager.LoadScene("MainMenu");
     }
 
 
@@ -152,7 +178,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         Transform spawnPoint = GetRandomSpawnPoint();
         PhotonNetwork.Instantiate("PlayerPrefab", spawnPoint.position, spawnPoint.rotation);
-        Debug.Log("Respawneo Player ID: " + photonView.ViewID + " Nickname: " + photonView.Owner.NickName);
 
     }
 
@@ -179,12 +204,7 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
 
-    [System.Serializable]
-    public class PlayerStatsData
-    {
-        public int kills;
-        public int deaths;
-    }
+ 
 
     private void EnsureAllPlayersRegistered()
     {

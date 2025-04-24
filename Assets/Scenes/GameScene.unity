@@ -11837,6 +11837,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c983d2e0e4f9b204990f5f915c74982c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameEndUIPrefab: {fileID: 6487835917255707930, guid: d058b2a722ee94548af717b1b869cc07, type: 3}
   spawnPoints:
   - {fileID: 1299775262}
   - {fileID: 1517277241}
@@ -11864,7 +11865,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 2
+  sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!1001 &1778498527

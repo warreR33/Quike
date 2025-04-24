@@ -154,7 +154,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount <= 1)
         {
             countdownStarted = false;
-            countdownText.text = "Esperando mas jugadores...";
+            countdownText.text = "Waiting for more players...";
             Debug.Log("Se cancelo la cuenta regresiva, queda un solo jugador");
         }
     }

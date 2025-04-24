@@ -78,7 +78,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void RPC_AddDeath(int actorNumber)
     {
         if (!playerStats.ContainsKey(actorNumber))
+        {
             RegisterPlayer(PhotonNetwork.CurrentRoom.GetPlayer(actorNumber));
+
+        }
 
         playerStats[actorNumber].deaths++;
     }
@@ -87,7 +90,10 @@ public class GameManager : MonoBehaviourPunCallbacks
     public void RPC_AddKill(int actorNumber)
     {
         if (!playerStats.ContainsKey(actorNumber))
+        {
             RegisterPlayer(PhotonNetwork.CurrentRoom.GetPlayer(actorNumber));
+
+        }
 
         playerStats[actorNumber].kills++;
 
@@ -137,23 +143,30 @@ public class GameManager : MonoBehaviourPunCallbacks
     private IEnumerator BackToMainMenuAfterDelay(float seconds)
     {
 
-
+        //El fin de la partida lo hacemos async
         PhotonNetwork.AutomaticallySyncScene = false;
 
         if (PhotonNetwork.InRoom)
+        {
             PhotonNetwork.LeaveRoom();
 
-        while (PhotonNetwork.InRoom)
-            yield return null;
+        }
+
+        while (PhotonNetwork.InRoom) yield return null;
 
         float t = seconds;
 
         //Contador
         GameEndUIController controller = gameEndUIInstance?.GetComponent<GameEndUIController>();
+
         while (t > 0)
         {
             if (controller != null)
+            {
                 controller.SetCountdown(Mathf.CeilToInt(t));
+
+            }
+
             yield return new WaitForSecondsRealtime(1f);
             t -= 1f;
         }
@@ -162,13 +175,6 @@ public class GameManager : MonoBehaviourPunCallbacks
         SceneManager.LoadScene("MainMenu");
     }
 
-
-    public PlayerStatsData GetStats(int actorNumber)
-    {
-        if (playerStats.TryGetValue(actorNumber, out var stats))
-            return stats;
-        return null;
-    }
 
     public void SpawnPlayer()
     {
@@ -180,7 +186,6 @@ public class GameManager : MonoBehaviourPunCallbacks
     private Transform GetRandomSpawnPoint()
     {
      
-
         return spawnPoints[Random.Range(0, spawnPoints.Length)];
 
     }
@@ -231,11 +236,18 @@ public class GameManager : MonoBehaviourPunCallbacks
         Player player = PhotonNetwork.CurrentRoom?.GetPlayer(entry.Key);
 
         if (player != null)
-            name = player.NickName;
-        else
-            name = $"Player {entry.Key}";
+            {
+                name = player.NickName;
 
-        GUILayout.Label($"<size=26>{name} - Kills: {entry.Value.kills} | Deaths: {entry.Value.deaths}</size>");
+            }
+
+            else
+            {
+                name = $"Player {entry.Key}";
+
+            }
+
+            GUILayout.Label($"<size=26>{name} - Kills: {entry.Value.kills} | Deaths: {entry.Value.deaths}</size>");
         }
 
         GUILayout.EndArea();

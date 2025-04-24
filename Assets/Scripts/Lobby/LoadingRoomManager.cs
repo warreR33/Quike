@@ -75,7 +75,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
         {
-            //Arrancamos despues de un segundo para evitar problemas
+            //Arrancamos despues de un segundo para evitar problemas de sync
             StartCoroutine(StartCountdownAfterDelay(1f));
 
         }
@@ -106,9 +106,10 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        //Si ya estamos en la sala y la cuenta regresiva comenzo
+        
         if (!joinedRoom || !countdownStarted) return;
 
+        //Si ya estamos en la sala y la cuenta regresiva comenzo
         double timeElapsed = PhotonNetwork.Time - startTime;
         double timeLeft = totalCountdownTime - timeElapsed;
 
@@ -120,7 +121,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
             if (PhotonNetwork.IsMasterClient)
             {
-                //Cerramos la sala
+                //Cerramos la sala al iniciar 
                 PhotonNetwork.CurrentRoom.IsOpen = false;
                 PhotonNetwork.CurrentRoom.IsVisible = false;
                 Debug.Log("Se cierra la sala");
@@ -142,7 +143,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
         if (PhotonNetwork.IsMasterClient && countdownStarted)
         {
-            //RPC para sincronizar el tiempo en cada cliente
+            //RPC al nuevo jugador para sincronizar el tiempo en cada cliente
             photonView.RPC("RPC_StartCountdown", newPlayer, startTime);
         }
     }

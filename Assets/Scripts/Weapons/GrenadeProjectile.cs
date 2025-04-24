@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using Unity.VisualScripting;
 
 public class GrenadeProjectile : MonoBehaviourPun
 {
@@ -9,6 +10,8 @@ public class GrenadeProjectile : MonoBehaviourPun
     public int explosionDamage = 50;
     public float lifeTime = 3f;
     public GameObject explosionEffect;
+
+    public float speed = 20f;
 
     private int attackerViewID;
     private Rigidbody rb;
@@ -35,6 +38,12 @@ public class GrenadeProjectile : MonoBehaviourPun
             Explode(); 
         }
    
+
+    }
+
+    void Update ()
+    {
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
     }
 
@@ -71,10 +80,7 @@ public class GrenadeProjectile : MonoBehaviourPun
         {
             PhotonNetwork.Destroy(gameObject);
         }
-        else
-        {
-            Debug.LogWarning("Intento de destruir una granada que no nos pertenece y no somos MasterClient.");
-        }
+    
 
     }
 

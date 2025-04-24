@@ -133,7 +133,6 @@ public class Shooter : MonoBehaviour
                 ApplyRecoil(grenadeLauncherModelTransform);
 
                 GameObject grenade = PhotonNetwork.Instantiate(grenadePrefab.name, shootPoint.position, Quaternion.identity);
-                grenade.GetComponent<Rigidbody>().velocity = direction * 15f;
                 grenade.GetComponent<GrenadeProjectile>().SetAttacker(photonView.ViewID);
             }
             else

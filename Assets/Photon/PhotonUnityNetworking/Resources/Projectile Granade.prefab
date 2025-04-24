@@ -132,7 +132,7 @@ MonoBehaviour:
   explosionDamage: 50
   lifeTime: 3
   explosionEffect: {fileID: 1550638059059794835, guid: 879689ad0864f6f4397075c61551b569, type: 3}
-  speed: 5
+  speed: 8
 --- !u!114 &4755552169607407586
 MonoBehaviour:
   m_ObjectHideFlags: 0

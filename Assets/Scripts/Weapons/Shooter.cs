@@ -132,7 +132,7 @@ public class Shooter : MonoBehaviour
 
                 ApplyRecoil(grenadeLauncherModelTransform);
 
-                GameObject grenade = PhotonNetwork.Instantiate(grenadePrefab.name, shootPoint.position, Quaternion.identity);
+                GameObject grenade = PhotonNetwork.Instantiate(grenadePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
                 grenade.GetComponent<GrenadeProjectile>().SetAttacker(photonView.ViewID);
             }
             else

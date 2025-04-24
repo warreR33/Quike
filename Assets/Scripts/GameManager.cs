@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
+using System.Linq;
 using UnityEngine.SceneManagement;
 
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
-    //public static GameManager Instance;
 
     [SerializeField] private GameObject gameEndUIPrefab;
     private GameObject gameEndUIInstance;
 
     [SerializeField] private Transform[] spawnPoints;
-    [SerializeField] private int maxGameKills= 2;
+    [SerializeField] private int maxGameKills= 5;
 
     //Pequena clase para guardar los datos de partida de cada player
     [System.Serializable] public class PlayerStatsData
@@ -26,13 +26,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     //Stats por jugador
     private Dictionary<int, PlayerStatsData> playerStats = new Dictionary<int, PlayerStatsData>();
 
-    //private void Awake()
-    //{
-    //    if (Instance == null) Instance = this;
-    //}
 
     private void Start()
     {
+       
+
         Debug.Log("Cantidad de jugadores en la sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
 
         PhotonNetwork.AutomaticallySyncScene = true;
@@ -111,7 +109,7 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_EndGame(string winnerName)
     {
-
+        
 
         ////Pausamos juego
         Time.timeScale = 0f;
@@ -222,10 +220,22 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         EnsureAllPlayersRegistered();
 
-        foreach (var entry in playerStats)
+        //Ordenar por kills
+        var sortedStats = playerStats.OrderByDescending(p => p.Value.kills);
+
+        foreach (var entry in sortedStats)
         {
-            string name = PhotonNetwork.CurrentRoom?.GetPlayer(entry.Key)?.NickName ?? $"Jugador {entry.Key}";
-            GUILayout.Label($"<size=26>{name} - Kills: {entry.Value.kills} | Deaths: {entry.Value.deaths}</size>");
+
+        string name;
+
+        Player player = PhotonNetwork.CurrentRoom?.GetPlayer(entry.Key);
+
+        if (player != null)
+            name = player.NickName;
+        else
+            name = $"Player {entry.Key}";
+
+        GUILayout.Label($"<size=26>{name} - Kills: {entry.Value.kills} | Deaths: {entry.Value.deaths}</size>");
         }
 
         GUILayout.EndArea();

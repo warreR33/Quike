@@ -128,10 +128,12 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
 
         gameEndUIInstance = Instantiate(gameEndUIPrefab);
+        GameEndUIController controller = gameEndUIInstance.GetComponent<GameEndUIController>();
 
-        TMPro.TextMeshProUGUI[] winnerText = gameEndUIInstance.GetComponentsInChildren<TMPro.TextMeshProUGUI>(true);
-        if (winnerText.Length > 0)
-            winnerText[0].text = $"{winnerName} has won!";
+        if (controller != null)
+        {
+            controller.SetWinner(winnerName);
+        }
     }
 
     private IEnumerator BackToMainMenuAfterDelay(float seconds)
@@ -148,21 +150,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         float t = seconds;
 
-        // Contador regresivo en texto (opcional)
-        TMPro.TextMeshProUGUI countdownText = gameEndUIInstance?.GetComponentInChildren<TMPro.TextMeshProUGUI>(true);
+        //Contador
+        GameEndUIController controller = gameEndUIInstance?.GetComponent<GameEndUIController>();
         while (t > 0)
         {
-            if (countdownText != null)
-                countdownText.text = $"Going back to menu in {Mathf.CeilToInt(t)}s...";
+            if (controller != null)
+                controller.SetCountdown(Mathf.CeilToInt(t));
             yield return new WaitForSecondsRealtime(1f);
             t -= 1f;
         }
 
 
-      
-
-
-        
         SceneManager.LoadScene("MainMenu");
     }
 

@@ -70,6 +70,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [PunRPC]
     void RPC_ApplyDamage(int damage, int attackerViewID)
     {
+      
         ApplyDamage(damage, attackerViewID);
 
         if (photonView.IsMine && damageFx != null)
@@ -95,6 +96,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (attackerView != null)
             {
+
                 int attackerActorNr = attackerView.OwnerActorNr;
 
                 //Sincronizamos kills
@@ -102,9 +104,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
 
             }
-
+          
             //Sincronizamos Deaths
-            //GameManager.Instance.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
             gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
 
 

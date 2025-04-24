@@ -12,13 +12,13 @@ public class GameEndUIController : MonoBehaviour
 
     public void SetWinner(string winner)
     {
-       
-        winnerText.text = $"{winner} has won!";
+
+        if (winnerText != null) winnerText.text = $"{winner} has won!";
     }
 
     public void SetCountdown(int seconds)
     {
-        countdownText.text = $"Going back to menu in {seconds}s...";
+        if (countdownText != null) countdownText.text = $"Going back to menu in {seconds}s...";
     }
 }
 

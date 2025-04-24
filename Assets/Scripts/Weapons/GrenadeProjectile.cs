@@ -35,17 +35,14 @@ public class GrenadeProjectile : MonoBehaviourPun
             Explode(); 
         }
    
+
     }
 
     IEnumerator ExplodeAfterDelay()
     {
         yield return new WaitForSeconds(lifeTime);
-
         if (!hasExploded)
-        {
             Explode();
-
-        }
     }
 
     void Explode()
@@ -57,7 +54,8 @@ public class GrenadeProjectile : MonoBehaviourPun
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
-       
+        if (PhotonNetwork.IsMasterClient)
+        {
             Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
             foreach (Collider col in colliders)
             {
@@ -67,10 +65,16 @@ public class GrenadeProjectile : MonoBehaviourPun
                     damageable.TakeDamage(explosionDamage,attackerViewID); 
                 }
             }
+        }
 
+        if (photonView.IsMine || PhotonNetwork.IsMasterClient)
+        {
             PhotonNetwork.Destroy(gameObject);
-
-        
+        }
+        else
+        {
+            Debug.LogWarning("Intento de destruir una granada que no nos pertenece y no somos MasterClient.");
+        }
 
     }
 

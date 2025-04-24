@@ -57,8 +57,7 @@ public class GrenadeProjectile : MonoBehaviourPun
             Instantiate(explosionEffect, transform.position, Quaternion.identity);
         }
 
-        if (photonView.IsMine)
-        {
+       
             Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
             foreach (Collider col in colliders)
             {
@@ -68,9 +67,11 @@ public class GrenadeProjectile : MonoBehaviourPun
                     damageable.TakeDamage(explosionDamage,attackerViewID); 
                 }
             }
-        }
 
-        PhotonNetwork.Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
+
+        
+
     }
 
     private void OnDrawGizmosSelected()

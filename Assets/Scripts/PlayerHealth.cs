@@ -38,7 +38,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (healthText != null)
             {
-                healthText.text = $"{currentHealth}/{maxHealth}";
+                healthText.text = $"{currentHealth}";
             }
         }
         else
@@ -139,7 +139,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (healthText != null)
             {
-                healthText.text = $"{currentHealth}/{maxHealth}";
+                healthText.text = $"{currentHealth}";
             }
         }
     }

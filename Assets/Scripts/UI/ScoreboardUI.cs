@@ -5,8 +5,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
+
 
 public class ScoreboardUI : MonoBehaviour
 {

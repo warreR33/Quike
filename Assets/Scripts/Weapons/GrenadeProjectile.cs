@@ -19,7 +19,6 @@ public class GrenadeProjectile : MonoBehaviourPun
 
     void Start()
     {
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
         rb = GetComponent<Rigidbody>();
         StartCoroutine(ExplodeAfterDelay());
@@ -45,6 +44,7 @@ public class GrenadeProjectile : MonoBehaviourPun
 
     void Update ()
     {
+        transform.Translate(Vector3.forward * speed * Time.deltaTime);
 
     }
 

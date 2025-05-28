@@ -7747,6 +7747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c983d2e0e4f9b204990f5f915c74982c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoreboardUIPrefab: {fileID: 3468562330971513910, guid: 5291ae45c8343844a9e20b9608bf1fff, type: 3}
   gameEndUIPrefab: {fileID: 6487835917255707930, guid: d058b2a722ee94548af717b1b869cc07, type: 3}
   spawnPoints:
   - {fileID: 1299775262}

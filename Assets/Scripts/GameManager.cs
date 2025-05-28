@@ -9,6 +9,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviourPunCallbacks
 {
+    public static GameManager Instance { get; private set; }
 
     [SerializeField] private GameObject gameEndUIPrefab;
     private GameObject gameEndUIInstance;
@@ -25,7 +26,23 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     //Stats por jugador
     private Dictionary<int, PlayerStatsData> playerStats = new Dictionary<int, PlayerStatsData>();
+    public Dictionary<int, PlayerStatsData> PlayerStats => playerStats;
 
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject); 
+            return;
+        }
+        Instance = this;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+            Instance = null; 
+    }
 
     private void Start()
     {
@@ -53,6 +70,8 @@ public class GameManager : MonoBehaviourPunCallbacks
             Debug.LogError("No estas conectado a Photon o no estas en una sala");
         }
     }
+
+  
 
     //Quitamos de la lista los player que se desconecten
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -218,39 +237,24 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private void OnGUI()
+    
+
+    void OnGUI()
     {
-        GUILayout.BeginArea(new Rect(10, 10, 600, Screen.height));
-        GUILayout.Label("<b><size=26>DEBUG - STATS</size></b>");
+        int ping = PhotonNetwork.GetPing();
 
-        EnsureAllPlayersRegistered();
+        GUIStyle style = new GUIStyle(GUI.skin.label);
+        style.fontSize = 18;
+        style.normal.textColor = Color.white;
 
-        //Ordenar por kills
-        var sortedStats = playerStats.OrderByDescending(p => p.Value.kills);
+        string text = $"Ping: {ping} ms";
 
-        foreach (var entry in sortedStats)
-        {
+        float width = 150;
+        float height = 30;
+        float x = Screen.width - width - 10;
+        float y = 10;
 
-        string name;
-
-        Player player = PhotonNetwork.CurrentRoom?.GetPlayer(entry.Key);
-
-        if (player != null)
-            {
-                name = player.NickName;
-
-            }
-
-            else
-            {
-                name = $"Player {entry.Key}";
-
-            }
-
-            GUILayout.Label($"<size=26>{name} - Kills: {entry.Value.kills} | Deaths: {entry.Value.deaths}</size>");
-        }
-
-        GUILayout.EndArea();
+        GUI.Label(new Rect(x, y, width, height), text, style);
     }
 }
 

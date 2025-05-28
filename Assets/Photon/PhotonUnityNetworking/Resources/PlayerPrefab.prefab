@@ -1592,6 +1592,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   maxSlopeAngle: 40
+  scoreboardUIPrefab: {fileID: 3468562330971513910, guid: 5291ae45c8343844a9e20b9608bf1fff, type: 3}
+  gameManager: {fileID: 0}
   orientation: {fileID: 7230477337653691995}
   state: 0
   sliding: 0
@@ -1635,7 +1637,7 @@ MonoBehaviour:
   playerCamera: {fileID: 7230477337348191936}
   crosshairImage: {fileID: 4129811197717479615}
   pistolFireRate: 0.2
-  grenadeCooldown: 20
+  grenadeCooldown: 1
 --- !u!114 &558164822118573726
 MonoBehaviour:
   m_ObjectHideFlags: 0

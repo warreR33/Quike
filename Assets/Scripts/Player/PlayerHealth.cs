@@ -63,6 +63,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         }
         else
         {
+            //aplica dano al dueno del objeto
             photonView.RPC("RPC_ApplyDamage", photonView.Owner, damage, attackerViewID);
         }
     }
@@ -100,8 +101,11 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                 int attackerActorNr = attackerView.OwnerActorNr;
 
                 //Sincronizamos kills
-                gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
-
+                //Solo sumar kill si no se mato a si mismo
+                if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
+                {
+                    gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
+                }
 
             }
           

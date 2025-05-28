@@ -57,7 +57,12 @@ public class PlayerMovement : MonoBehaviour
     public float maxSlopeAngle;
     private RaycastHit slopeHit;
     private bool exitingSlope;
-    
+
+    [Header("ScoreBoard Settings")]
+    [SerializeField] private GameObject scoreboardUIPrefab;
+    private GameObject scoreboardInstance;
+    private ScoreboardUI scoreboardUI;
+
 
     public Transform orientation;
 
@@ -130,6 +135,16 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyUp(crouchKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+        }
+
+        //Scoreboard
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            ShowScoreboard(true);
+        }
+        else if (Input.GetKeyUp(KeyCode.Tab))
+        {
+            ShowScoreboard(false);
         }
     }
 
@@ -285,5 +300,24 @@ public class PlayerMovement : MonoBehaviour
     public Vector3 GetSlopeMoveDirection(Vector3 direction)
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized;
+    }
+
+    private void ShowScoreboard(bool show)
+    {
+        if (show)
+        {
+            if (scoreboardInstance == null)
+            {
+                scoreboardInstance = Instantiate(scoreboardUIPrefab);
+                scoreboardUI = scoreboardInstance.GetComponent<ScoreboardUI>();
+            }
+
+            scoreboardUI.UpdateScoreboard(GameManager.Instance.PlayerStats);
+            scoreboardInstance.SetActive(true);
+        }
+        else if (scoreboardInstance != null)
+        {
+            scoreboardInstance.SetActive(false);
+        }
     }
 }

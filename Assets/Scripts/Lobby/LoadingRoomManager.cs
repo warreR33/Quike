@@ -13,8 +13,9 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private Button exitButton;
 
+    //Cambiar para pruebas
+    private const float totalCountdownTime = 0f;
 
-    private const float totalCountdownTime = 5f;
     private bool countdownStarted = false;
     private double startTime;
     private bool joinedRoom = false;
@@ -73,7 +74,14 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
 
         UpdatePlayerListUI();
 
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        //if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        //{
+        //    //Arrancamos despues de un segundo para evitar problemas de sync
+        //    StartCoroutine(StartCountdownAfterDelay(1f));
+
+        //}
+
+        if (PhotonNetwork.IsMasterClient)
         {
             //Arrancamos despues de un segundo para evitar problemas de sync
             StartCoroutine(StartCountdownAfterDelay(1f));
@@ -136,7 +144,12 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         UpdatePlayerListUI();
 
         //Si esta el master mas un jugador empieza el conteo
-        if (PhotonNetwork.IsMasterClient && !countdownStarted && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        //if (PhotonNetwork.IsMasterClient && !countdownStarted && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        //{
+        //    StartCoroutine(StartCountdownAfterDelay(1f));
+        //}
+
+        if (PhotonNetwork.IsMasterClient && !countdownStarted)
         {
             StartCoroutine(StartCountdownAfterDelay(1f));
         }

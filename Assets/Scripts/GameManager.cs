@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     public static GameManager Instance { get; private set; }
 
     [SerializeField] private GameObject gameEndUIPrefab;
+    [SerializeField] private GameObject localPlayerDeadUIPrefab;
+
     private GameObject gameEndUIInstance;
 
     [SerializeField] private Transform[] spawnPoints;
@@ -211,14 +213,17 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     public void SpawnPlayerAfterDead()
     {
+        localPlayerDeadUIPrefab.SetActive(true);
         StartCoroutine(Respawn());
 
     }
 
     private IEnumerator Respawn()
     {
+
         yield return new WaitForSeconds(3f);
         SpawnPlayer();
+        localPlayerDeadUIPrefab.SetActive(false);
     }
 
 

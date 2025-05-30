@@ -14,7 +14,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private Button exitButton;
 
     //Cambiar para pruebas
-    private const float totalCountdownTime = 3f;
+    private const float totalCountdownTime = 8f;
 
     private bool countdownStarted = false;
     private double startTime;

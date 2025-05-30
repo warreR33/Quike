@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public float sprintSpeed;
     public float slideSpeed;
 
-    private float desiredMoveSpeed;
+    public float desiredMoveSpeed;
     private float lastDesiredMoveSpeed;
 
     [HideInInspector]public float speedIncreaseMultiplier;
@@ -65,6 +65,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     public Transform orientation;
+    public Transform armaTransform;
 
     float horizontalInput;
     float verticalInput;
@@ -130,11 +131,15 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(transform.localScale.x, crouchYScale, transform.localScale.z);
             rb.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+            armaTransform.localScale = new Vector3(1f, 2f, 1f);
+
         }
 
         if (Input.GetKeyUp(crouchKey))
         {
             transform.localScale = new Vector3(transform.localScale.x, startYScale, transform.localScale.z);
+            armaTransform.localScale = new Vector3(1f, 1f, 1f);
+
         }
 
         //Scoreboard
@@ -189,7 +194,7 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.air;
         }
 
-        if(Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0)
+        /*if (Mathf.Abs(desiredMoveSpeed - lastDesiredMoveSpeed) > 4f && moveSpeed != 0 && grounded)
         {
             StopAllCoroutines();
             StartCoroutine(SmoothlyLerpMoveSpeed());
@@ -197,12 +202,18 @@ public class PlayerMovement : MonoBehaviour
         else
         {
             moveSpeed = desiredMoveSpeed;
-        }
+        }*/
+
+
+        //Parece Ser que esto Soluciona el Bug
+        float acceleration = (grounded ? 10f : 4f);
+        moveSpeed = Mathf.MoveTowards(moveSpeed, desiredMoveSpeed, Time.deltaTime * acceleration);
+
 
         lastDesiredMoveSpeed = desiredMoveSpeed;
     }
 
-    private IEnumerator SmoothlyLerpMoveSpeed()
+    /*private IEnumerator SmoothlyLerpMoveSpeed()
     {
         float time = 0;
         float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
@@ -226,7 +237,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         moveSpeed = desiredMoveSpeed;
-    }
+    }*/
 
     private void MovePlayer()
     {
@@ -319,5 +330,11 @@ public class PlayerMovement : MonoBehaviour
         {
             scoreboardInstance.SetActive(false);
         }
+    }
+
+    public void DesactiveScoreBoard()
+    {
+        scoreboardInstance.SetActive(false);
+
     }
 }

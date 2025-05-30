@@ -9,7 +9,7 @@ using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviourPun, IDamageable
 {
     [SerializeField] private float maxHealth = 100;
-    private float currentHealth;
+    public float currentHealth;
 
     [SerializeField] private DamageFx damageFx;
 
@@ -100,6 +100,9 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
                 int attackerActorNr = attackerView.OwnerActorNr;
 
+                PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
+
+                playerMovement.DesactiveScoreBoard();
                 //Sincronizamos kills
                 //Solo sumar kill si no se mato a si mismo
                 if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)

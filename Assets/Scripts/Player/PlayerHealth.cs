@@ -149,6 +149,13 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             {
                 healthText.text = $"{currentHealth}";
             }
+
+            if (currentHealth <= 0)
+            {
+                Die();
+
+            }
+
         }
     }
 }

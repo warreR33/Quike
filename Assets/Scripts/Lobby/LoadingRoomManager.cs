@@ -14,7 +14,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private Button exitButton;
 
     //Cambiar para pruebas
-    private const float totalCountdownTime = 3f;
+    private const float totalCountdownTime = 10f;
 
     private bool countdownStarted = false;
     private double startTime;
@@ -95,7 +95,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
        
             Debug.LogError("Fallo al unirse a la sala: " + message);
             Debug.LogError("Se redirige a MainMenu");
-        SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("MainMenu");
 
 
     }

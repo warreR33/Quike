@@ -83,13 +83,14 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private void ApplyDamage(int damage, int attackerViewID)
     {
-        currentHealth -= damage;
-
         if (photonView.IsMine)
         {
             UpdateHealthUI();
+
         }
 
+
+        currentHealth -= damage;
 
         if (currentHealth <= 0)
         {
@@ -100,9 +101,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
                 int attackerActorNr = attackerView.OwnerActorNr;
 
-                PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
-                playerMovement.DesactiveScoreBoard();
+
                 //Sincronizamos kills
                 //Solo sumar kill si no se mato a si mismo
                 if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
@@ -117,6 +117,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
 
             Die();
+
+
         }
     }
 
@@ -125,12 +127,17 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     {
 
         
-        if (photonView.IsMine)
-        {
-            UpdateHealthUI();
+        
+
+
             gameManager.SpawnPlayerAfterDead();
+
+            PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
+
+            playerMovement.DesactiveScoreBoard();
+
             PhotonNetwork.Destroy(gameObject);
-        }
+        
    
 
     }

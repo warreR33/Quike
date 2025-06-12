@@ -7757,6 +7757,7 @@ MonoBehaviour:
   - {fileID: 564577485}
   - {fileID: 1842623852}
   maxGameKills: 5
+  respawnCooldown: 3
 --- !u!114 &1777852203
 MonoBehaviour:
   m_ObjectHideFlags: 0

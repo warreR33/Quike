@@ -123,14 +123,16 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     private void Die()
     {
 
-        
+        PhotonNetwork.Destroy(gameObject);
+
         if (photonView.IsMine)
         {
 
 
             PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
-            if (playerMovement != null) {
+            if (playerMovement != null)
+            {
                 playerMovement.DesactiveScoreBoard();
             }
 
@@ -139,7 +141,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         }
 
-        PhotonNetwork.Destroy(gameObject);
 
 
     }

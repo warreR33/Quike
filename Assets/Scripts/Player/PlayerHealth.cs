@@ -83,15 +83,16 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private void ApplyDamage(int damage, int attackerViewID)
     {
-        if (currentHealth <= 0) return;
 
-            if (photonView.IsMine)
-            {
-                UpdateHealthUI();
-            }
+        
 
 
         currentHealth -= damage;
+
+        if (photonView.IsMine)
+        {
+            UpdateHealthUI();
+        }
 
         if (currentHealth <= 0)
         {
@@ -131,7 +132,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         if (photonView.IsMine)
         {
 
-            gameManager.SpawnPlayerAfterDead();
 
             PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
@@ -140,8 +140,11 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             }
 
             PhotonNetwork.Destroy(gameObject);
+
+            gameManager.SpawnPlayerAfterDead();
+
         }
-   
+
 
     }
 

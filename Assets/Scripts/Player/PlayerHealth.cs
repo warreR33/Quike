@@ -127,6 +127,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         
         if (photonView.IsMine)
         {
+            UpdateHealthUI();
             gameManager.SpawnPlayerAfterDead();
             PhotonNetwork.Destroy(gameObject);
         }
@@ -150,11 +151,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                 healthText.text = $"{currentHealth}";
             }
 
-            if (currentHealth <= 0)
-            {
-                Die();
-
-            }
+       
 
         }
     }

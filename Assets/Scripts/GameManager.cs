@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private int maxGameKills= 5;
+    [SerializeField] private int respawnCooldown = 3;
+
 
     //Pequena clase para guardar los datos de partida de cada player
     [System.Serializable] public class PlayerStatsData
@@ -221,15 +223,11 @@ public class GameManager : MonoBehaviourPunCallbacks
     private IEnumerator Respawn()
     {
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(respawnCooldown);
         SpawnPlayer();
         localPlayerDeadUIPrefab.SetActive(false);
     }
 
-
-
-
- 
 
     private void EnsureAllPlayersRegistered()
     {

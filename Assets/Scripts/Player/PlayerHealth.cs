@@ -83,11 +83,12 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private void ApplyDamage(int damage, int attackerViewID)
     {
-        if (photonView.IsMine)
-        {
-            UpdateHealthUI();
+        if (currentHealth <= 0) return;
 
-        }
+            if (photonView.IsMine)
+            {
+                UpdateHealthUI();
+            }
 
 
         currentHealth -= damage;

@@ -320,4 +320,12 @@ public class PlayerMovement : MonoBehaviour
             scoreboardInstance.SetActive(false);
         }
     }
+
+    public void DesactiveScoreBoard()
+    {
+        if (scoreboardInstance != null)
+        {
+            scoreboardInstance.SetActive(false);
+        }
+    }
 }

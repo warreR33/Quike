@@ -124,6 +124,12 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         
         if (photonView.IsMine)
         {
+            PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
+
+            if (playerMovement != null)
+            {
+                playerMovement.DesactiveScoreBoard();
+            }
             gameManager.SpawnPlayerAfterDead();
             PhotonNetwork.Destroy(gameObject);
         }

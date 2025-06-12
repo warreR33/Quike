@@ -19,6 +19,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private GameManager gameManager;
 
+    private bool isDead = false;
 
     private void Start()
     {
@@ -71,7 +72,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [PunRPC]
     void RPC_ApplyDamage(int damage, int attackerViewID)
     {
-      
+        if (isDead) return;
+
         ApplyDamage(damage, attackerViewID);
 
         if (photonView.IsMine && damageFx != null)
@@ -81,11 +83,10 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
 
 
+
     private void ApplyDamage(int damage, int attackerViewID)
     {
-
-        
-
+        if (isDead) return; // <-- evita daño posterior a la muerte
 
         currentHealth -= damage;
 
@@ -96,33 +97,27 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         if (currentHealth <= 0)
         {
+            isDead = true; // <-- marca como muerto para no repetir
             PhotonView attackerView = PhotonView.Find(attackerViewID);
 
             if (attackerView != null)
             {
-
                 int attackerActorNr = attackerView.OwnerActorNr;
 
-
-
-                //Sincronizamos kills
-                //Solo sumar kill si no se mato a si mismo
+                // Solo sumar kill si no se mató a sí mismo
                 if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
                 {
                     gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
                 }
-
             }
-          
-            //Sincronizamos Deaths
+
+            // Sumar death
             gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
 
-
             Die();
-
-
         }
     }
+
 
 
     private void Die()
@@ -139,16 +134,17 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                 playerMovement.DesactiveScoreBoard();
             }
 
-            PhotonNetwork.Destroy(gameObject);
 
             gameManager.SpawnPlayerAfterDead();
 
         }
 
+        PhotonNetwork.Destroy(gameObject);
+
 
     }
 
-   
+
 
     private void UpdateHealthUI()
     {

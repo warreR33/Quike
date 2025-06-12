@@ -82,6 +82,15 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             playerStats.Remove(otherPlayer.ActorNumber);
         }
+
+        if(PhotonNetwork.PlayerList.Length == 1)
+        {
+            Debug.Log("No hay mas jugadores en la sala. Redirigiendo a MainMenu");
+            SceneManager.LoadScene("MainMenu");
+
+        }
+
+
     }
 
     public void RegisterPlayer(Player player)
@@ -103,7 +112,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             RegisterPlayer(PhotonNetwork.CurrentRoom.GetPlayer(actorNumber));
 
         }
-
+        
         playerStats[actorNumber].deaths++;
     }
 

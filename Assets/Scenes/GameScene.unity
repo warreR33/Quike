@@ -7749,6 +7749,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gameEndUIPrefab: {fileID: 6487835917255707930, guid: d058b2a722ee94548af717b1b869cc07, type: 3}
   localPlayerDeadUIPrefab: {fileID: 6320726838989521796}
+  localPlayerDisconnecting: {fileID: 8346780038118372810}
   spawnPoints:
   - {fileID: 1299775262}
   - {fileID: 1517277241}
@@ -9767,6 +9768,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ef04b53ac2fe40438c32064d2f00fc9, type: 3}
+--- !u!1 &8346780038118372810 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6815818661772141973, guid: 4ef04b53ac2fe40438c32064d2f00fc9, type: 3}
+  m_PrefabInstance: {fileID: 8346780038118372809}
+  m_PrefabAsset: {fileID: 0}
 --- !u!20 &8977916857675288276
 Camera:
   m_ObjectHideFlags: 0

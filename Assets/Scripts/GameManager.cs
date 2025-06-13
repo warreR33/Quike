@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     [SerializeField] private GameObject gameEndUIPrefab;
     [SerializeField] private GameObject localPlayerDeadUIPrefab;
+    [SerializeField] private GameObject localPlayerDisconnecting;
+
 
     private GameObject gameEndUIInstance;
 
@@ -83,15 +85,24 @@ public class GameManager : MonoBehaviourPunCallbacks
             playerStats.Remove(otherPlayer.ActorNumber);
         }
 
+        //Si solo queda un jugador se termina la partida
         if(PhotonNetwork.PlayerList.Length == 1)
         {
-            Debug.Log("No hay mas jugadores en la sala. Redirigiendo a MainMenu");
-            SceneManager.LoadScene("MainMenu");
+            Time.timeScale = 0f;
+
+            localPlayerDeadUIPrefab.SetActive(true);
+
+            StartCoroutine(BackToMainMenuAfterDelay(5f));
+
+            //Debug.Log("No hay mas jugadores en la sala. Redirigiendo a MainMenu");
+            //SceneManager.LoadScene("MainMenu");
 
         }
 
 
     }
+
+   
 
     public void RegisterPlayer(Player player)
     {

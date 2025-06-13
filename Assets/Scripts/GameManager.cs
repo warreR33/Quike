@@ -90,7 +90,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         {
             Time.timeScale = 0f;
 
-            localPlayerDeadUIPrefab.SetActive(true);
+            localPlayerDisconnecting.SetActive(true);
 
             StartCoroutine(BackToMainMenuAfterDelay(5f));
 

@@ -20,6 +20,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     private double startTime;
     private bool joinedRoom = false;
 
+    [SerializeField] private Slider countdownSlider;
 
     private void Awake()
     {
@@ -120,8 +121,13 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         //Si ya estamos en la sala y la cuenta regresiva comenzo
         double timeElapsed = PhotonNetwork.Time - startTime;
         double timeLeft = totalCountdownTime - timeElapsed;
+        if (countdownSlider != null)
+{
+    countdownSlider.value = (float)timeLeft;
+}
 
-        countdownText.text = $"The game will start in: {Mathf.CeilToInt((float)timeLeft)}s";
+
+        countdownText.text = $"El juego empezara en: {Mathf.CeilToInt((float)timeLeft)}s";
 
         if (timeLeft <= 0)
         {
@@ -168,7 +174,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount <= 1)
         {
             countdownStarted = false;
-            countdownText.text = "Waiting for more players...";
+            countdownText.text = "Esperando mas jugadores...";
             Debug.Log("Se cancelo la cuenta regresiva, queda un solo jugador");
         }
     }
@@ -177,10 +183,13 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     {
         if (playersListText == null) return;
 
-        playersListText.text = "Connected Players:\n";
+        playersListText.text = "Jugadores Conectados:\n";
         foreach (var player in PhotonNetwork.PlayerList)
         {
-            playersListText.text += $"{player.NickName}\n";
+        Color color = ObtenerColorPorActorNumber(player.ActorNumber);
+        string colorHex = ColorUtility.ToHtmlStringRGB(color);
+        playersListText.text += $"<color=#{colorHex}>{player.NickName}</color>\n";
+
         }
     }
 
@@ -200,7 +209,32 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     {
         startTime = networkStartTime;
         countdownStarted = true;
+        if (countdownSlider != null)
+{
+    countdownSlider.gameObject.SetActive(true);
+    countdownSlider.maxValue = totalCountdownTime;
+    countdownSlider.value = totalCountdownTime;
+}
+
     }
+
+    private Color ObtenerColorPorActorNumber(int actorNumber)
+{
+    Color[] coloresDisponibles = new Color[]
+    {
+        Color.red,
+        Color.green,
+        Color.blue,
+        Color.yellow,
+        Color.cyan,
+        Color.magenta,
+        new Color(1f, 0.5f, 0f), // naranja
+        new Color(0.5f, 0f, 1f)  // violeta
+    };
+
+    return coloresDisponibles[(actorNumber - 1) % coloresDisponibles.Length];
+}
+
 
   
 }

@@ -7,31 +7,36 @@ using Photon.Pun;
 public class PlayerNameTag : MonoBehaviourPun
 {
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private Transform lookAtTarget;
+    private Camera localPlayerCamera;
 
     void Start()
     {
-        if (photonView.IsMine)
+        // Setea el nombre una sola vez
+        nameText.text = photonView.IsMine ? PhotonNetwork.NickName : photonView.Owner.NickName;
+
+        // Buscar la cámara del jugador local
+        foreach (var cam in Camera.allCameras)
         {
-            nameText.text = PhotonNetwork.NickName;
-        }
-        else
-        {
-            nameText.text = photonView.Owner.NickName;
+            var photonViewInParent = cam.GetComponentInParent<PhotonView>();
+            if (photonViewInParent != null && photonViewInParent.IsMine)
+            {
+                localPlayerCamera = cam;
+                break;
+            }
         }
 
-        if (Camera.main != null)
-            lookAtTarget = Camera.main.transform;
+        // Fallback si no hay cámara con PhotonView
+        if (localPlayerCamera == null)
+            localPlayerCamera = Camera.main;
     }
 
-    void Update()
+    void LateUpdate()
     {
+        if (localPlayerCamera == null) return;
 
-        if (lookAtTarget != null)
-        {
-            transform.forward = lookAtTarget.forward;
-
-        }
+        // Billboard con orientación correcta
+        transform.LookAt(transform.position + localPlayerCamera.transform.rotation * Vector3.forward,
+                         localPlayerCamera.transform.rotation * Vector3.up);
     }
 }
 

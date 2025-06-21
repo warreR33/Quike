@@ -45,6 +45,10 @@ MonoBehaviour:
   - RPC_EndGame
   - RPC_AddDeath
   - RPC_AddKill
+  - RPC_ForceLeaveRoom
+  - RPC_EndGameAndForceLeave
+  - RPC_DisconnectAll
+  - RPC_NotifyGameEnd
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

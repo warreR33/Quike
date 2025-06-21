@@ -12,17 +12,20 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button playButton;
 
+    private void Awake()
+    {
+        PhotonNetwork.AutomaticallySyncScene = true;
+    }
+
     private void Start()
     {
-        //Despausamos el juego tras el loop inicial
-        Time.timeScale = 1f;
+       
 
         playButton.onClick.AddListener(OnClickPlay);
 
         playButton.interactable = false; 
 
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+     
 
         if (!PhotonNetwork.IsConnected)
         {
@@ -70,9 +73,10 @@ public class MainMenuManager : MonoBehaviourPunCallbacks
         }
 
         PhotonNetwork.NickName = playerName;
-
         PlayerPrefs.SetString("PlayerName", playerName);
 
-        SceneManager.LoadScene("LoadingScene");
+        SceneManager.LoadScene("LobbyScene");
+
     }
+
 }

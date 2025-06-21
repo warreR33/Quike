@@ -21,6 +21,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private int maxGameKills= 5;
 
+    private bool isWinner = false;
+
     //Pequena clase para guardar los datos de partida de cada player
     [System.Serializable] public class PlayerStatsData
     {
@@ -36,16 +38,42 @@ public class GameManager : MonoBehaviourPunCallbacks
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); 
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
+
             return;
         }
         Instance = this;
+        DontDestroyOnLoad(this.gameObject);
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "LobbyScene")
+        {
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
+        }
     }
 
     void OnDestroy()
     {
         if (Instance == this)
-            Instance = null; 
+            Instance = null;
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+
     }
 
     private void Start()
@@ -92,10 +120,8 @@ public class GameManager : MonoBehaviourPunCallbacks
 
             localPlayerDisconnecting.SetActive(true);
 
-            StartCoroutine(BackToMainMenuAfterDelay(5f));
+            StartCoroutine(LeaveRoomAfterDelay(5f));
 
-            //Debug.Log("No hay mas jugadores en la sala. Redirigiendo a MainMenu");
-            //SceneManager.LoadScene("MainMenu");
 
         }
 
@@ -142,6 +168,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         if (playerStats[actorNumber].kills >= maxGameKills)
         {
             WinGame(actorNumber);
+            isWinner = true;
         }
     }
 
@@ -156,7 +183,15 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_EndGame(string winnerName)
     {
-        
+        PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
+
+       if(playerMovement != null)
+        {
+            playerMovement.SetInput(false);
+
+        }
+
+
 
         ////Pausamos juego
         Time.timeScale = 0f;
@@ -165,9 +200,12 @@ public class GameManager : MonoBehaviourPunCallbacks
         ShowGameEndUI(winnerName);
 
         ////Esperar y cargar MainMenu
-        StartCoroutine(BackToMainMenuAfterDelay(5f));
+        StartCoroutine(LeaveRoomAfterDelay(5f));
+
 
     }
+
+
 
     private void ShowGameEndUI(string winnerName)
     {
@@ -181,44 +219,65 @@ public class GameManager : MonoBehaviourPunCallbacks
         }
     }
 
-    private IEnumerator BackToMainMenuAfterDelay(float seconds)
+
+    [PunRPC]
+    private void RPC_NotifyGameEnd()
     {
-
-        //El fin de la partida lo hacemos async
-        PhotonNetwork.AutomaticallySyncScene = false;
-
         if (PhotonNetwork.InRoom)
-        {
             PhotonNetwork.LeaveRoom();
+    }
 
-        }
+   
 
-        while (PhotonNetwork.InRoom) yield return null;
-
-        float t = seconds;
-
-        //Contador
+    private IEnumerator LeaveRoomAfterDelay(float delay)
+    {
+        
         GameEndUIController controller = gameEndUIInstance?.GetComponent<GameEndUIController>();
+        float t = delay;
 
         while (t > 0)
         {
-            if (controller != null)
-            {
-                controller.SetCountdown(Mathf.CeilToInt(t));
-
-            }
-
+            controller?.SetCountdown(Mathf.CeilToInt(t));
             yield return new WaitForSecondsRealtime(1f);
             t -= 1f;
         }
 
+        //Importante aseguramos que el mensaje queue este activo hasta que realmente salimos
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
 
-        SceneManager.LoadScene("MainMenu");
+        //Esperamos efectivamente salir de la sala
+        while (PhotonNetwork.InRoom)
+        {
+            yield return null;
+        }
+
+        //Ahora si desactivamos cola y cargamos Lobby
+        PhotonNetwork.IsMessageQueueRunning = false;
+        SceneManager.LoadScene("LobbyScene");
+    }
+
+
+
+    public override void OnLeftRoom()
+    {
+        Debug.Log("Saliste de la sala (OnLeftRoom)");
+     
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("Desconectado: " + cause);
+        SceneManager.LoadScene("LobbyScene");
     }
 
 
     public void SpawnPlayer()
     {
+        if (isWinner) return;
+
         Transform spawnPoint = GetRandomSpawnPoint();
         PhotonNetwork.Instantiate("PlayerPrefab", spawnPoint.position, spawnPoint.rotation);
 
@@ -248,8 +307,11 @@ public class GameManager : MonoBehaviourPunCallbacks
 
 
 
+    public bool GetIsWinner()
+    {
+        return isWinner;
+    }
 
- 
 
     private void EnsureAllPlayersRegistered()
     {

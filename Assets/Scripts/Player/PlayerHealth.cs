@@ -120,18 +120,36 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private void Die()
     {
+        PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
-        
+        //Se desactivan controles al terminar partida
+        if (gameManager.GetIsWinner())
+        {
+            playerMovement.SetInput(false);
+
+        }
+
         if (photonView.IsMine)
         {
-            PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
             if (playerMovement != null)
             {
                 playerMovement.DesactiveScoreBoard();
+
+               
             }
-            gameManager.SpawnPlayerAfterDead();
-            PhotonNetwork.Destroy(gameObject);
+
+            if (!gameManager.GetIsWinner())
+            {
+                gameManager.SpawnPlayerAfterDead();
+
+            }
+
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
         }
    
 

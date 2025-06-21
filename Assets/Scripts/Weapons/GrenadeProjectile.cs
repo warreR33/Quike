@@ -79,7 +79,11 @@ public class GrenadeProjectile : MonoBehaviourPun
 
         if (photonView.IsMine || PhotonNetwork.IsMasterClient)
         {
-            PhotonNetwork.Destroy(gameObject);
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
         }
     
 

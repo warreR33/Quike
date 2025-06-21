@@ -77,6 +77,8 @@ public class PlayerMovement : MonoBehaviour
     public MovementState state;
     public bool sliding;
 
+    private bool inputEnabled = true;
+
     private void Start()
     {
         photonView = GetComponent<PhotonView>();
@@ -89,7 +91,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!inputEnabled) return;
+
         if (!photonView.IsMine) return;
+
+
 
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
 
@@ -106,6 +112,11 @@ public class PlayerMovement : MonoBehaviour
         MovePlayer();
     }
 
+    public void SetInput(bool isEnabled)
+    {
+        inputEnabled = isEnabled;
+    }
+  
     private void MyInput()
     {
         horizontalInput = Input.GetAxisRaw("Horizontal");

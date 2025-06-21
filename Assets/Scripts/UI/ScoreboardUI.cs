@@ -17,7 +17,11 @@ public class ScoreboardUI : MonoBehaviour
     public void UpdateScoreboard(Dictionary<int, GameManager.PlayerStatsData> stats)
     {
         foreach (Transform child in contentParent)
-            Destroy(child.gameObject);
+            if(child.gameObject != null)
+            {
+                Destroy(child.gameObject);
+
+            }
 
         var sorted = stats.OrderByDescending(p => p.Value.kills);
 

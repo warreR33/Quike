@@ -14,7 +14,22 @@ public class Projectile : MonoBehaviourPun
     private void Start()
     {
         //Destruimos el objeto si no toco nada en un tiempo
-        Destroy(gameObject, lifetime);
+        if (photonView.IsMine)
+        {
+            StartCoroutine(DestroyAfterTime());
+        }
+
+    }
+
+    private IEnumerator DestroyAfterTime()
+    {
+        yield return new WaitForSeconds(lifetime);
+
+        if(gameObject != null )
+        {
+            PhotonNetwork.Destroy(gameObject);
+
+        }
     }
 
     private void Update()
@@ -36,11 +51,20 @@ public class Projectile : MonoBehaviourPun
         {
             //Se dana y se pasa autor
             damageable.TakeDamage(damage, attackerActorNumber);
-            PhotonNetwork.Destroy(gameObject);
+
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
         }
         else if (!other.isTrigger)
         {
-            PhotonNetwork.Destroy(gameObject);
+            if (gameObject != null)
+            {
+                PhotonNetwork.Destroy(gameObject);
+
+            }
         }
     }
 }

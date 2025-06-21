@@ -5,6 +5,7 @@ using Photon.Realtime;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class LoadingRoomManager : MonoBehaviourPunCallbacks
 {
@@ -14,80 +15,82 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private Button exitButton;
 
     //Cambiar para pruebas
-    private const float totalCountdownTime = 10f;
+    private const float totalCountdownTime = 3f;
 
     private bool countdownStarted = false;
     private double startTime;
     private bool joinedRoom = false;
 
 
-    private void Awake()
-    {
-        //todos los clientes cambian de escena cuando el Master lo hace
-        PhotonNetwork.AutomaticallySyncScene = true;
-    }
+
 
     private void Start()
     {
+        PhotonNetwork.IsMessageQueueRunning = true;
+
         exitButton.onClick.AddListener(OnClickExit);
 
+        Debug.Log("Start en LoadingRoomManager - Estoy en escena y conectado: " + PhotonNetwork.IsConnected + " InRoom: " + PhotonNetwork.InRoom);
 
-        if (!PhotonNetwork.IsConnected || PhotonNetwork.NetworkClientState == ClientState.Disconnected)
+        StartCoroutine(WaitUntilInRoom());
+
+    }
+    
+
+
+    IEnumerator WaitUntilInRoom()
+    {
+        while (!PhotonNetwork.InRoom)
         {
-            Debug.Log("Reconectando a Photon...");
-            PhotonNetwork.ConnectUsingSettings();
+            Debug.Log("Esperando a estar en la sala...");
+            yield return null;
         }
-        else
+
+        Debug.Log("Ya estamos en la sala. Jugadores: " + PhotonNetwork.CurrentRoom.PlayerCount);
+        joinedRoom = true;
+        UpdatePlayerListUI();
+
+        if (PhotonNetwork.IsMasterClient)
         {
-            Debug.Log("Ya conectado, uniendo a sala...");
-            JoinMainRoom();
+            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                StartCoroutine(StartCountdownAfterDelay(1f));
+            }
+            else
+            {
+                countdownText.text = "Waiting for more players...";
+            }
         }
     }
 
     public override void OnConnectedToMaster()
     {
         Debug.Log("Conectado al Master");
-        JoinMainRoom();
     }
-
-    private void JoinMainRoom()
-    {
-        RoomOptions roomOptions = new RoomOptions
-        {
-            MaxPlayers = 4,
-            IsVisible = true,
-            IsOpen = true
-        };
-
-        PhotonNetwork.JoinOrCreateRoom("SalaPrincipal", roomOptions, TypedLobby.Default);
-    }
-
 
 
     public override void OnJoinedRoom()
     {
-
-        Debug.Log("Unido a la sala: " + PhotonNetwork.CurrentRoom.Name);
-
-
+        Debug.Log(">> OnJoinedRoom llamado - Nombre: " + PhotonNetwork.NickName);
         joinedRoom = true;
 
         UpdatePlayerListUI();
 
-        //if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
-        //{
-        //    //Arrancamos despues de un segundo para evitar problemas de sync
-        //    StartCoroutine(StartCountdownAfterDelay(1f));
-
-        //}
-
         if (PhotonNetwork.IsMasterClient)
         {
-            //Arrancamos despues de un segundo para evitar problemas de sync
-            StartCoroutine(StartCountdownAfterDelay(1f));
+            Debug.Log("Soy el Master. Jugadores en sala: " + PhotonNetwork.CurrentRoom.PlayerCount);
 
+            if (PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                StartCoroutine(StartCountdownAfterDelay(1f));
+            }
+            else
+            {
+                countdownText.text = "Waiting for more players...";
+            }
         }
     }
+
 
 
     public override void OnJoinRoomFailed(short returnCode, string message)
@@ -95,7 +98,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
        
             Debug.LogError("Fallo al unirse a la sala: " + message);
             Debug.LogError("Se redirige a MainMenu");
-            SceneManager.LoadScene("MainMenu");
+            SceneManager.LoadScene("LobbyScene");
 
 
     }
@@ -109,7 +112,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         Debug.Log("Saliste de la sala");
-        SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("LobbyScene");
     }
 
     private void Update()
@@ -132,7 +135,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
                 //Cerramos la sala al iniciar 
                 PhotonNetwork.CurrentRoom.IsOpen = false;
                 PhotonNetwork.CurrentRoom.IsVisible = false;
-                Debug.Log("Se cierra la sala");
+                Debug.Log("Se inicia partida");
 
                 PhotonNetwork.LoadLevel("GameScene");
             }
@@ -143,23 +146,21 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     {
         UpdatePlayerListUI();
 
-        //Si esta el master mas un jugador empieza el conteo
-        //if (PhotonNetwork.IsMasterClient && !countdownStarted && PhotonNetwork.CurrentRoom.PlayerCount > 1)
-        //{
-        //    StartCoroutine(StartCountdownAfterDelay(1f));
-        //}
-
-        if (PhotonNetwork.IsMasterClient && !countdownStarted)
+        if (PhotonNetwork.IsMasterClient)
         {
-            StartCoroutine(StartCountdownAfterDelay(1f));
-        }
+            if (!countdownStarted && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+            {
+                Debug.Log("Nuevo jugador, empezando cuenta regresiva");
+                StartCoroutine(StartCountdownAfterDelay(1f));
+            }
 
-        if (PhotonNetwork.IsMasterClient && countdownStarted)
-        {
-            //RPC al nuevo jugador para sincronizar el tiempo en cada cliente
-            photonView.RPC("RPC_StartCountdown", newPlayer, startTime);
+            if (countdownStarted)
+            {
+                photonView.RPC("RPC_StartCountdown", newPlayer, startTime);
+            }
         }
     }
+
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
@@ -173,6 +174,8 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         }
     }
 
+
+
     private void UpdatePlayerListUI()
     {
         if (playersListText == null) return;
@@ -184,16 +187,36 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         }
     }
 
+
     IEnumerator StartCountdownAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
 
+        if (!PhotonNetwork.IsConnected || !PhotonNetwork.InRoom)
+        {
+            Debug.LogWarning("No se puede iniciar cuenta regresiva: no conectado o no en sala");
+            yield break;
+        }
+
         startTime = PhotonNetwork.Time;
         countdownStarted = true;
 
-        //RPC para pasarle el tiempo de inicio a todos los clientes
+        //Guardamos como propiedad de la sala
+        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable
+    {
+        { "StartTime", startTime }
+    };
+
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.CurrentRoom.SetCustomProperties(props);
+        }
+
+        //Enviamos el tiempo a todos
         photonView.RPC("RPC_StartCountdown", RpcTarget.All, startTime);
     }
+
+
 
     [PunRPC]
     void RPC_StartCountdown(double networkStartTime)
@@ -202,5 +225,12 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         countdownStarted = true;
     }
 
-  
+    public override void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        if (propertiesThatChanged.ContainsKey("StartTime") && !countdownStarted)
+        {
+            startTime = (double)propertiesThatChanged["StartTime"];
+            countdownStarted = true;
+        }
+    }
 }

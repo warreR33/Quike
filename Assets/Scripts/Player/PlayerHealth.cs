@@ -12,6 +12,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     private float currentHealth;
 
     [SerializeField] private DamageFx damageFx;
+    [SerializeField] private HitFX hitFX;
+    [SerializeField] private GameObject deathEffectPrefab;
 
     [Header("UI References")]
     [SerializeField] private Slider healthSlider;
@@ -43,7 +45,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         }
         else
         {
-            // Desactivar UI en instancias que no son nuestras
             if (healthSlider != null)
                 healthSlider.gameObject.SetActive(false);
             if (healthText != null)
@@ -60,10 +61,14 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (damageFx != null)
                 damageFx.ShowDamage();
+                
+              if (hitFX != null)
+                Debug.Log("Si, si seno1");
+                hitFX.ShowDamage();
         }
+
         else
         {
-            //aplica dano al dueno del objeto
             photonView.RPC("RPC_ApplyDamage", photonView.Owner, damage, attackerViewID);
         }
     }
@@ -71,15 +76,20 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [PunRPC]
     void RPC_ApplyDamage(int damage, int attackerViewID)
     {
-      
+
         ApplyDamage(damage, attackerViewID);
 
-        if (photonView.IsMine && damageFx != null)
-            damageFx.ShowDamage();
+        if (photonView.IsMine)
+        {
+            if (damageFx != null)
+                damageFx.ShowDamage();
+
+            if (hitFX != null)
+                Debug.Log("Si, si seno2");
+                hitFX.ShowDamage();
+        }
+            
     }
-
-
-
 
     private void ApplyDamage(int damage, int attackerViewID)
     {
@@ -144,14 +154,30 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             }
 
+            if (deathEffectPrefab != null)
+            {
+                GameObject fx = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+                Destroy(fx, 3f); // Opcional: destruir luego de 3 segundos
+            }
+
             if (gameObject != null)
             {
+                photonView.RPC("RPC_ShowDeathFX", RpcTarget.All, transform.position);
                 PhotonNetwork.Destroy(gameObject);
-
             }
         }
    
 
+    }
+
+    [PunRPC]
+    void RPC_ShowDeathFX(Vector3 position)
+    {
+        if (deathEffectPrefab != null)
+        {
+            GameObject fx = Instantiate(deathEffectPrefab, position, Quaternion.identity);
+            Destroy(fx, 3f); // O la duración de tu partícula
+        }
     }
 
    

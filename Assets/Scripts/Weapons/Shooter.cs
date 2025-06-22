@@ -35,6 +35,11 @@ public class Shooter : MonoBehaviour
     private float recoilAmount = 0.2f;
     private float recoilSpeed = 10f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip pistolShotClip;
+    [SerializeField] private AudioClip grenadeShotClip;
+    [SerializeField] private AudioSource audioSource;
+
 
     private PhotonView photonView;
 
@@ -42,6 +47,8 @@ public class Shooter : MonoBehaviour
     private float lastShotTime;
 
     private bool inputEnabled = true;
+
+
 
 
     private enum WeaponType { Pistol, GrenadeLauncher }
@@ -69,8 +76,8 @@ public class Shooter : MonoBehaviour
         HandleCrosshair();
         HandleShooting();
 
-        RecoverPosition(pistolModelTransform,originalPositionP,originalRotationP);
-        RecoverPosition(grenadeLauncherModelTransform,originalPositionGL,originalRotationGL);
+        RecoverPosition(pistolModelTransform, originalPositionP, originalRotationP);
+        RecoverPosition(grenadeLauncherModelTransform, originalPositionGL, originalRotationGL);
     }
 
     public void SetInputOff()
@@ -129,8 +136,10 @@ public class Shooter : MonoBehaviour
 
                 GameObject projectile = PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
                 projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
-            }
 
+                // Sonido sincronizado
+                photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "pistol");
+            }
         }
 
 
@@ -144,6 +153,9 @@ public class Shooter : MonoBehaviour
 
                 GameObject grenade = PhotonNetwork.Instantiate(grenadePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
                 grenade.GetComponent<GrenadeProjectile>().SetAttacker(photonView.ViewID);
+
+                // Sonido sincronizado
+                photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "grenade");
             }
             else
             {
@@ -151,7 +163,6 @@ public class Shooter : MonoBehaviour
                 Debug.Log($"Lanzagranadas en cooldown: {timeLeft:F1}s restantes");
             }
         }
-
     }
 
 
@@ -166,5 +177,23 @@ public class Shooter : MonoBehaviour
         gunTransform.localRotation = Quaternion.Lerp(gunTransform.localRotation, originalRotation, recoilSpeed * Time.deltaTime);
     }
 
+    [PunRPC]
+    void RPC_PlayShotSound(string weapon)
+    {
+        if (audioSource == null) return;
+
+        switch (weapon)
+        {
+            case "pistol":
+                if (pistolShotClip != null)
+                    audioSource.PlayOneShot(pistolShotClip);
+                break;
+
+            case "grenade":
+                if (grenadeShotClip != null)
+                    audioSource.PlayOneShot(grenadeShotClip);
+                break;
+        }
+    }
 }
 

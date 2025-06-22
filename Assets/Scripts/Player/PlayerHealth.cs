@@ -122,13 +122,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     {
         PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
-        //Se desactivan controles al terminar partida
-        if (gameManager.GetIsWinner())
-        {
-            playerMovement.SetInput(false);
-
-        }
-
+      
         if (photonView.IsMine)
         {
 

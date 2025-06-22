@@ -108,13 +108,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!inputEnabled) return;
+
         if (!photonView.IsMine) return;
         MovePlayer();
     }
 
-    public void SetInput(bool isEnabled)
+    public void SetInputOff()
     {
-        inputEnabled = isEnabled;
+        inputEnabled = false;
     }
   
     private void MyInput()

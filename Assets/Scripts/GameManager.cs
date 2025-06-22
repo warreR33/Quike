@@ -165,10 +165,10 @@ public class GameManager : MonoBehaviourPunCallbacks
         playerStats[actorNumber].kills++;
 
 
-        if (playerStats[actorNumber].kills >= maxGameKills)
+        if (PhotonNetwork.IsMasterClient && !isWinner && playerStats[actorNumber].kills >= maxGameKills)
         {
-            WinGame(actorNumber);
             isWinner = true;
+            WinGame(actorNumber);
         }
     }
 
@@ -183,12 +183,22 @@ public class GameManager : MonoBehaviourPunCallbacks
     [PunRPC]
     private void RPC_EndGame(string winnerName)
     {
-        PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
+        //Desactivamos Inputs
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
 
-       if(playerMovement != null)
+        foreach (var player in players)
         {
-            playerMovement.SetInput(false);
+            PhotonView view = player.GetComponent<PhotonView>();
+            if (view != null && view.IsMine)
+            {
+                PlayerMovement movement = player.GetComponent<PlayerMovement>();
+                if (movement != null)
+                    movement.SetInputOff();
 
+                Shooter shooter = player.GetComponent<Shooter>();
+                if (shooter != null)
+                    shooter.SetInputOff();
+            }
         }
 
 

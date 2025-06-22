@@ -15,6 +15,7 @@ public class LobbyManager : MonoBehaviourPunCallbacks
     [SerializeField] private TMP_InputField roomNameInput;
     [SerializeField] private Button createRoomButton;
     [SerializeField] private Button refreshButton;
+    [SerializeField] GameObject photonErrorCatcherPrefab;
 
 
 
@@ -22,6 +23,11 @@ public class LobbyManager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
+        if (FindObjectOfType<PhotonErrorHandler>() == null)
+        {
+            Instantiate(photonErrorCatcherPrefab);
+        }
+
         PhotonNetwork.IsMessageQueueRunning = true;
 
         //Despausamos el juego tras el loop inicial

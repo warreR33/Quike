@@ -41,6 +41,9 @@ public class Shooter : MonoBehaviour
 
     private float lastShotTime;
 
+    private bool inputEnabled = true;
+
+
     private enum WeaponType { Pistol, GrenadeLauncher }
     private WeaponType currentWeapon = WeaponType.Pistol;
 
@@ -58,6 +61,8 @@ public class Shooter : MonoBehaviour
 
     void Update()
     {
+        if (!inputEnabled) return;
+
         if (!photonView.IsMine) return;
 
         HandleWeaponSwitch();
@@ -66,6 +71,11 @@ public class Shooter : MonoBehaviour
 
         RecoverPosition(pistolModelTransform,originalPositionP,originalRotationP);
         RecoverPosition(grenadeLauncherModelTransform,originalPositionGL,originalRotationGL);
+    }
+
+    public void SetInputOff()
+    {
+        inputEnabled = false;
     }
 
     void HandleWeaponSwitch()

@@ -12,7 +12,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private Button exitButton;
 
-    private const float totalCountdownTime = 3f;
+    private const float totalCountdownTime = 5f;
 
     private bool countdownStarted = false;
     private double startTime;

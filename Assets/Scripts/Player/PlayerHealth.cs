@@ -93,6 +93,9 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         if (currentHealth <= 0)
         {
+            //PlayerHealth attackerHealth = null;
+            string killerName = "Player";
+
             PhotonView attackerView = PhotonView.Find(attackerViewID);
 
             if (attackerView != null)
@@ -107,18 +110,20 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
                     gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
                 }
 
+                killerName = attackerView.Owner.NickName;
+
             }
-          
+
             //Sincronizamos Deaths
             gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
 
 
-            Die();
+            Die(killerName);
         }
     }
 
 
-    private void Die()
+    private void Die(string killerName)
     {
         PlayerMovement playerMovement = this.transform.GetComponent<PlayerMovement>();
 
@@ -135,7 +140,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (!gameManager.GetIsWinner())
             {
-                gameManager.SpawnPlayerAfterDead();
+                gameManager.SpawnPlayerAfterDead(killerName);
 
             }
 

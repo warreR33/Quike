@@ -206,6 +206,9 @@ public class GameManager : MonoBehaviourPunCallbacks
         ////Pausamos juego
         Time.timeScale = 0f;
 
+        //Ocultar Placa de Asesinato
+        localPlayerDeadUIPrefab.SetActive(false);
+
         ////Mostrar UI victoria
         ShowGameEndUI(winnerName);
 
@@ -300,12 +303,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     }
 
-    public void SpawnPlayerAfterDead()
+
+    public void SpawnPlayerAfterDead(string killerName)
     {
         localPlayerDeadUIPrefab.SetActive(true);
-        StartCoroutine(Respawn());
 
+        //Buscar el componente que controla el texto del UI dentro del prefab
+        DeadUIController deadUI = localPlayerDeadUIPrefab.GetComponent<DeadUIController>();
+        if (deadUI != null)
+        {
+            deadUI.Init(killerName); 
+        }
+
+        StartCoroutine(Respawn());
     }
+
 
     private IEnumerator Respawn()
     {

@@ -64,7 +64,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     {
         if (isDead) return;
 
-        if (photonView.IsMine)
+        if (photonView.IsMine && !isDead)
         {
             ApplyDamage(damage, attackerActorNr);
 
@@ -174,19 +174,22 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             {
                 gameManager.SpawnPlayerAfterDead(killerName);
 
+                if (deathEffectPrefab != null)
+                {
+                    GameObject fx = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
+                    Destroy(fx, 3f); // Opcional: destruir luego de 3 segundos
+                }
+
+                if (gameObject != null)
+                {
+                    photonView.RPC("RPC_ShowDeathFX", RpcTarget.All, transform.position);
+                    PhotonNetwork.Destroy(gameObject);
+                }
             }
 
-            if (deathEffectPrefab != null)
-            {
-                GameObject fx = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-                Destroy(fx, 3f); // Opcional: destruir luego de 3 segundos
-            }
+           
 
-            if (gameObject != null)
-            {
-                photonView.RPC("RPC_ShowDeathFX", RpcTarget.All, transform.position);
-                PhotonNetwork.Destroy(gameObject);
-            }
+          
         }
    
 

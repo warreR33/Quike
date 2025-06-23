@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using Unity.VisualScripting;
 
 public class GrenadeProjectile : MonoBehaviourPun
 {
@@ -10,34 +9,22 @@ public class GrenadeProjectile : MonoBehaviourPun
     public int explosionDamage = 50;
     public float lifeTime = 3f;
     public GameObject explosionEffect;
-
     public float speed = 20f;
 
-<<<<<<< Updated upstream
     private int attackerViewID;
-    private Rigidbody rb;
-=======
-    //private int attackerViewID;
-    private int attackerActorNr;
-
->>>>>>> Stashed changes
     private bool hasExploded = false;
+
+    [Header("Audio")]
+    public AudioClip explosionSound;
 
     void Start()
     {
-
-        rb = GetComponent<Rigidbody>();
         StartCoroutine(ExplodeAfterDelay());
     }
 
-    //public void SetAttacker(int viewID)
-    //{
-    //    attackerViewID = viewID;
-    //}
-
-    public void SetAttacker(int actorNr)
+    public void SetAttacker(int viewID)
     {
-        attackerActorNr = actorNr;
+        attackerViewID = viewID;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -47,16 +34,13 @@ public class GrenadeProjectile : MonoBehaviourPun
         IDamageable target = collision.collider.GetComponent<IDamageable>();
         if (target != null)
         {
-            Explode(); 
+            Explode();
         }
-   
-
     }
 
-    void Update ()
+    void Update()
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
-
     }
 
     IEnumerator ExplodeAfterDelay()
@@ -68,67 +52,53 @@ public class GrenadeProjectile : MonoBehaviourPun
 
     void Explode()
     {
+        if (hasExploded) return;
         hasExploded = true;
-
+        
+        if (explosionSound != null)
+        {
+            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+        }
         if (explosionEffect != null)
         {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-        }
-
-        if (PhotonNetwork.IsMasterClient)
-        {
-            Collider[] colliders = Physics.OverlapSphere(transform.position, explosionRadius);
-            foreach (Collider col in colliders)
+            GameObject effect = Instantiate(explosionEffect, transform.position, Quaternion.identity);
+            ParticleSystem ps = effect.GetComponent<ParticleSystem>();
+            if (ps != null)
             {
-                IDamageable damageable = col.GetComponent<IDamageable>();
-                if (damageable != null)
-                {
-                    damageable.TakeDamage(explosionDamage,attackerViewID); 
-                }
+                Destroy(effect, ps.main.duration + ps.main.startLifetime.constantMax);
+            }
+            else
+            {
+                Destroy(effect, 2f);
             }
         }
 
-<<<<<<< Updated upstream
-        if (photonView.IsMine || PhotonNetwork.IsMasterClient)
-=======
 
-        photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerActorNr);
 
-        //photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerViewID);
+        photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerViewID);
     }
 
     [PunRPC]
-    void MasterHandleExplosion(Vector3 explosionPos, int attackerNr)
+    void MasterHandleExplosion(Vector3 explosionPos, int attackerID)
     {
     // Aplicar daño
         HashSet<IDamageable> alreadyDamaged = new HashSet<IDamageable>();
 
         Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
         foreach (Collider col in colliders)
->>>>>>> Stashed changes
         {
-            if (gameObject != null)
+            IDamageable damageable = col.GetComponent<IDamageable>();
+            if (damageable != null && !alreadyDamaged.Contains(damageable))
             {
-<<<<<<< Updated upstream
-                PhotonNetwork.Destroy(gameObject);
-
-=======
                 alreadyDamaged.Add(damageable);
-                damageable.TakeDamage(explosionDamage, attackerNr);
->>>>>>> Stashed changes
+                damageable.TakeDamage(explosionDamage, attackerID);
             }
         }
-    
 
-<<<<<<< Updated upstream
-=======
         // Destrucción segura
         if (photonView.IsMine || photonView.Owner == null)
         {
-            if (gameObject != null)
-            {
-                PhotonNetwork.Destroy(gameObject);
-            }
+            PhotonNetwork.Destroy(gameObject);
         }
         else
         {
@@ -139,11 +109,7 @@ public class GrenadeProjectile : MonoBehaviourPun
     [PunRPC]
     void RequestSelfDestruct()
     {
-        if (gameObject != null)
-        {
-            PhotonNetwork.Destroy(gameObject);
-        }
->>>>>>> Stashed changes
+        PhotonNetwork.Destroy(gameObject);
     }
 
     private void OnDrawGizmosSelected()

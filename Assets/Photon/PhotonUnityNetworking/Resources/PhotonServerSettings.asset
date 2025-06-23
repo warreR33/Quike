@@ -49,6 +49,12 @@ MonoBehaviour:
   - RPC_EndGameAndForceLeave
   - RPC_DisconnectAll
   - RPC_NotifyGameEnd
+  - ApplyExplosionDamage
+  - MasterHandleExplosion
+  - RequestSelfDestruct
+  - RPC_ShowHitFX
+  - RPC_PlayShotSound
+  - RPC_ShowDeathFX
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

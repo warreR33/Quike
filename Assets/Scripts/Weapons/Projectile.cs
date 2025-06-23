@@ -8,11 +8,16 @@ public class Projectile : MonoBehaviourPun
     public float speed = 20f;
     public int damage = 100;
     public float lifetime = 5f;
+    public BulletTrailScriptableObject TralConfig;
+    protected TrailRenderer Trail;
+    protected Transform Target;
+
+    [SerializeField] Renderer Renderer;
+
+    private bool IsDisabling = false;
 
     private int attackerActorNumber;
 
-<<<<<<< Updated upstream
-=======
     protected const string DO_DISABLE_METHOD_NAME = "DoDisable";
 
     void Awake()
@@ -20,29 +25,35 @@ public class Projectile : MonoBehaviourPun
         Trail = GetComponent<TrailRenderer>();
     }
 
-    protected virtual void OnEnable()
+    protected virtual void Onenable()
     {
         Renderer.enabled = true;
         IsDisabling = false;
         ConfigureTrail();
 
     }
->>>>>>> Stashed changes
     private void Start()
     {
-        //Destruimos el objeto si no toco nada en un tiempo
         if (photonView.IsMine)
         {
             StartCoroutine(DestroyAfterTime());
         }
-        ConfigureTrail();
+
+    }
+
+    private void ConfigureTrail()
+    {
+        if (Trail != null && TralConfig != null)
+        {
+            TralConfig.SetupTrail(Trail);
+        }
     }
 
     private IEnumerator DestroyAfterTime()
     {
         yield return new WaitForSeconds(lifetime);
 
-        if(gameObject != null )
+        if (gameObject != null)
         {
             PhotonNetwork.Destroy(gameObject);
 
@@ -84,5 +95,31 @@ public class Projectile : MonoBehaviourPun
             }
         }
     }
+
+    protected void OnDisable()
+    {
+        CancelInvoke(DO_DISABLE_METHOD_NAME);
+        Renderer.enabled = false;
+
+        if (Trail != null && TralConfig != null)
+        {
+            IsDisabling = true;
+            Invoke(DO_DISABLE_METHOD_NAME, TralConfig.Time);
+        }
+        else
+        {
+            DoDisable();
+        }
+    }
+
+    void DoDisable() {
+        if (Trail != null && TralConfig != null)
+        {
+            Trail.Clear();
+        }
+
+        gameObject.SetActive(false);
+    }
+
 }
 

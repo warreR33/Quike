@@ -89,7 +89,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         ApplyDamage(damage, attackerActorNr);
 
-        if (photonView.IsMine)
+        if (photonView.IsMine && !isDead)
         {
             if (damageFx != null)
                 damageFx.ShowDamage();

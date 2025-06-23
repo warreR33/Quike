@@ -75,7 +75,15 @@ public class GrenadeProjectile : MonoBehaviourPun
 
 
 
-        photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerActorNr);
+        if (PhotonNetwork.IsMasterClient)
+        {
+            MasterHandleExplosion(transform.position, attackerActorNr);
+        }
+        else
+        {
+            photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerActorNr);
+        }
+
     }
 
     [PunRPC]
@@ -111,6 +119,7 @@ public class GrenadeProjectile : MonoBehaviourPun
     {
         PhotonNetwork.Destroy(gameObject);
     }
+
 
     private void OnDrawGizmosSelected()
     {

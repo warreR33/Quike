@@ -135,7 +135,9 @@ public class Shooter : MonoBehaviour
                 ApplyRecoil(pistolModelTransform);
 
                 GameObject projectile = PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
-                projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
+                //projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
+                projectile.GetComponent<GrenadeProjectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
+
 
                 // Sonido sincronizado
                 photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "pistol");
@@ -152,7 +154,9 @@ public class Shooter : MonoBehaviour
                 ApplyRecoil(grenadeLauncherModelTransform);
 
                 GameObject grenade = PhotonNetwork.Instantiate(grenadePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
-                grenade.GetComponent<GrenadeProjectile>().SetAttacker(photonView.ViewID);
+                //grenade.GetComponent<GrenadeProjectile>().SetAttacker(photonView.ViewID);
+                grenade.GetComponent<GrenadeProjectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
+
 
                 // Sonido sincronizado
                 photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "grenade");

@@ -11,7 +11,7 @@ public class GrenadeProjectile : MonoBehaviourPun
     public GameObject explosionEffect;
     public float speed = 20f;
 
-    private int attackerViewID;
+    private int attackerActorNr;
     private bool hasExploded = false;
 
     [Header("Audio")]
@@ -22,9 +22,9 @@ public class GrenadeProjectile : MonoBehaviourPun
         StartCoroutine(ExplodeAfterDelay());
     }
 
-    public void SetAttacker(int viewID)
+    public void SetAttacker(int actorNr)
     {
-        attackerViewID = viewID;
+        attackerActorNr = actorNr;
     }
 
     void OnCollisionEnter(Collision collision)
@@ -75,11 +75,11 @@ public class GrenadeProjectile : MonoBehaviourPun
 
 
 
-        photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerViewID);
+        photonView.RPC("MasterHandleExplosion", RpcTarget.MasterClient, transform.position, attackerActorNr);
     }
 
     [PunRPC]
-    void MasterHandleExplosion(Vector3 explosionPos, int attackerID)
+    void MasterHandleExplosion(Vector3 explosionPos, int attackerNr)
     {
     // Aplicar daño
         HashSet<IDamageable> alreadyDamaged = new HashSet<IDamageable>();
@@ -91,7 +91,7 @@ public class GrenadeProjectile : MonoBehaviourPun
             if (damageable != null && !alreadyDamaged.Contains(damageable))
             {
                 alreadyDamaged.Add(damageable);
-                damageable.TakeDamage(explosionDamage, attackerID);
+                damageable.TakeDamage(explosionDamage, attackerNr);
             }
         }
 

@@ -11,6 +11,8 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private TextMeshProUGUI playersListText;
     [SerializeField] private TextMeshProUGUI countdownText;
     [SerializeField] private Button exitButton;
+    [SerializeField] private Slider countdownSlider;
+
 
     private const float totalCountdownTime = 5f;
 
@@ -71,6 +73,11 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         double timeElapsed = PhotonNetwork.Time - startTime;
         double timeLeft = totalCountdownTime - timeElapsed;
 
+        if (countdownSlider != null)
+        {
+            countdownSlider.value = (float)timeLeft;
+        }
+
         countdownText.text = $"The game will start in: {Mathf.CeilToInt((float)timeLeft)}s";
 
         if (timeLeft <= 0)
@@ -117,6 +124,24 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         }
     }
 
+
+    private Color ObtenerColorPorActorNumber(int actorNumber)
+    {
+        Color[] coloresDisponibles = new Color[]
+        {
+        Color.red,
+        Color.green,
+        Color.blue,
+        Color.yellow,
+        Color.cyan,
+        Color.magenta,
+        new Color(1f, 0.5f, 0f), // naranja
+        new Color(0.5f, 0f, 1f)  // violeta
+        };
+
+        return coloresDisponibles[(actorNumber - 1) % coloresDisponibles.Length];
+    }
+
     private void UpdatePlayerListUI()
     {
         if (playersListText == null) return;
@@ -124,8 +149,15 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
         playersListText.text = "Connected Players:\n";
         foreach (var player in PhotonNetwork.PlayerList)
         {
-            playersListText.text += $"{player.NickName}\n";
+            Color color = ObtenerColorPorActorNumber(player.ActorNumber);
+            string colorHex = ColorUtility.ToHtmlStringRGB(color);
+            playersListText.text += $"<color=#{colorHex}>{player.NickName}</color>\n";
+
         }
+        //foreach (var player in PhotonNetwork.PlayerList)
+        //{
+        //    playersListText.text += $"{player.NickName}\n";
+        //}
     }
 
     IEnumerator StartCountdownAfterDelay(float delay)
@@ -150,5 +182,12 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     {
         startTime = networkStartTime;
         countdownStarted = true;
+
+        if (countdownSlider != null)
+        {
+            countdownSlider.gameObject.SetActive(true);
+            countdownSlider.maxValue = totalCountdownTime;
+            countdownSlider.value = totalCountdownTime;
+        }
     }
 }

@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -12,24 +10,30 @@ public class PauseMenuManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private GameObject pauseMenuUI;
     [SerializeField] private Button exitToMenuButton;
+    private GameManager gameManager;
 
     private bool isPaused = false;
-    private bool isExiting = false;
+    //private bool isExiting = false;
 
     void Start()
     {
         pauseMenuUI.SetActive(false);
         exitToMenuButton.onClick.AddListener(ExitToMenu);
+        gameManager = FindObjectOfType<GameManager>();
 
-        BloquearCursor(); // Entra con cursor bloqueado
+        BloquearCursor(); //Entra con cursor bloqueado
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!gameManager.GetIsWinner())
         {
-            TogglePauseMenu();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                TogglePauseMenu();
+            }
         }
+       
     }
 
     private void TogglePauseMenu()
@@ -45,7 +49,7 @@ public class PauseMenuManager : MonoBehaviourPunCallbacks
 
 private void ExitToMenu()
 {
-    GameManager.Instance.SalirManualmenteAlMenu();
+    gameManager.SalirManualmenteAlMenu();
     Cursor.lockState = CursorLockMode.None;
     Cursor.visible = true;
 }

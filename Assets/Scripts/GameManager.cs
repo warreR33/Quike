@@ -367,22 +367,26 @@ public class GameManager : MonoBehaviourPunCallbacks
     }
 
     public void SalirManualmenteAlMenu()
-{
+    {
     Time.timeScale = 1f; // Por si estaba pausado
     PhotonNetwork.AutomaticallySyncScene = false;
     StartCoroutine(VolverAlMenuTrasSalir());
-}
+    }
 
-private IEnumerator VolverAlMenuTrasSalir()
-{
-    if (PhotonNetwork.InRoom)
-        PhotonNetwork.LeaveRoom();
+    private IEnumerator VolverAlMenuTrasSalir()
+    {
+      if (PhotonNetwork.InRoom)
+            PhotonNetwork.LeaveRoom();
 
-    while (PhotonNetwork.InRoom)
-        yield return null;
+     while (PhotonNetwork.InRoom)
+          yield return null;
 
-    SceneManager.LoadScene("MainMenu");
-}
+      SceneManager.LoadScene("MainMenu");
+    }
+
+
+
+
 
 }
 

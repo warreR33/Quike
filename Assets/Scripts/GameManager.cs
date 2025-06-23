@@ -365,25 +365,6 @@ public class GameManager : MonoBehaviourPunCallbacks
 
         GUI.Label(new Rect(x, y, width, height), text, style);
     }
-
-    public void SalirManualmenteAlMenu()
-{
-    Time.timeScale = 1f; // Por si estaba pausado
-    PhotonNetwork.AutomaticallySyncScene = false;
-    StartCoroutine(VolverAlMenuTrasSalir());
-}
-
-private IEnumerator VolverAlMenuTrasSalir()
-{
-    if (PhotonNetwork.InRoom)
-        PhotonNetwork.LeaveRoom();
-
-    while (PhotonNetwork.InRoom)
-        yield return null;
-
-    SceneManager.LoadScene("MainMenu");
-}
-
 }
 
 

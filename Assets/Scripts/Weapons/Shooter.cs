@@ -23,8 +23,12 @@ public class Shooter : MonoBehaviour
 
 
     public Transform shootPoint;
+     public Transform EffectshootPoint;
     public Camera playerCamera;
     public Image crosshairImage;
+
+    [SerializeField] private GameObject pistolFlashPrefab;
+    [SerializeField] private GameObject granadeFlashPrefab;
 
     public float pistolFireRate = 0.5f;
     public float grenadeCooldown = 20f;
@@ -138,7 +142,12 @@ public class Shooter : MonoBehaviour
                 //projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
                 projectile.GetComponent<Projectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
 
-
+                if (pistolFlashPrefab && EffectshootPoint)
+                {
+                    Debug.Log("pistol flash");
+                    GameObject flash = Instantiate(pistolFlashPrefab, EffectshootPoint.position, EffectshootPoint.rotation);
+                    Destroy(flash, 1f);
+                }
                 // Sonido sincronizado
                 photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "pistol");
             }
@@ -158,8 +167,15 @@ public class Shooter : MonoBehaviour
                 grenade.GetComponent<GrenadeProjectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
 
 
+                if (granadeFlashPrefab && EffectshootPoint)
+                {
+                    GameObject flash = Instantiate(granadeFlashPrefab, EffectshootPoint.position, EffectshootPoint.rotation);
+                    Destroy(flash, 1f);
+                }
+
                 // Sonido sincronizado
                 photonView.RPC("RPC_PlayShotSound", RpcTarget.All, "grenade");
+                
             }
             else
             {
@@ -198,6 +214,8 @@ public class Shooter : MonoBehaviour
                     audioSource.PlayOneShot(grenadeShotClip);
                 break;
         }
+
+
     }
 }
 

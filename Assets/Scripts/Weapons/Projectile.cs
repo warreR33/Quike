@@ -8,9 +8,14 @@ public class Projectile : MonoBehaviourPun
     public float speed = 20f;
     public int damage = 100;
     public float lifetime = 5f;
+
+
     public BulletTrailScriptableObject TralConfig;
     protected TrailRenderer Trail;
     protected Transform Target;
+
+    [SerializeField] private GameObject impactEffect;
+    [SerializeField] private LayerMask structureLayers;
 
     [SerializeField] Renderer Renderer;
 
@@ -25,7 +30,7 @@ public class Projectile : MonoBehaviourPun
         Trail = GetComponent<TrailRenderer>();
     }
 
-    protected virtual void Onenable()
+    protected virtual void OnEnable()
     {
         Renderer.enabled = true;
         IsDisabling = false;
@@ -38,7 +43,7 @@ public class Projectile : MonoBehaviourPun
         {
             StartCoroutine(DestroyAfterTime());
         }
-
+        ConfigureTrail();
     }
 
     private void ConfigureTrail()
@@ -88,11 +93,23 @@ public class Projectile : MonoBehaviourPun
         }
         else if (!other.isTrigger)
         {
-            if (gameObject != null)
+            if (((1 << other.gameObject.layer) & structureLayers) != 0)
             {
-                PhotonNetwork.Destroy(gameObject);
-
+                photonView.RPC("RPC_SpawnImpactEffect", RpcTarget.All, transform.position, transform.rotation);
             }
+
+            if (gameObject != null)
+                PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    [PunRPC]
+    void RPC_SpawnImpactEffect(Vector3 position, Quaternion rotation)
+    {
+        if (impactEffect != null)
+        {
+            GameObject fx = Instantiate(impactEffect, position, rotation);
+            Destroy(fx, 2f);
         }
     }
 

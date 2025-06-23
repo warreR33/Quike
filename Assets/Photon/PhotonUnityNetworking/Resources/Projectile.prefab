@@ -134,6 +134,10 @@ MonoBehaviour:
   damage: 10
   lifetime: 5
   TralConfig: {fileID: 11400000, guid: a3a7d38dcd14bce44953b4b87655aefa, type: 2}
+  impactEffect: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
+  structureLayers:
+    serializedVersion: 2
+    m_Bits: 192
   Renderer: {fileID: 137195036088053818}
 --- !u!114 &4755552169607407586
 MonoBehaviour:

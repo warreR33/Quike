@@ -11,16 +11,51 @@ public class GrenadeProjectile : MonoBehaviourPun
     public GameObject explosionEffect;
     public float speed = 20f;
 
+    protected TrailRenderer Trail;
+    protected Transform Target;
+    
+    public BulletTrailScriptableObject TralConfig;
+    [SerializeField] Renderer Renderer;
+
+    private bool IsDisabling = false;
+
     private int attackerActorNr;
     private bool hasExploded = false;
 
     [Header("Audio")]
     public AudioClip explosionSound;
 
+    protected const string DO_DISABLE_METHOD_NAME = "DoDisable";
+
+    protected virtual void OnEnable()
+    {
+        Renderer.enabled = true;
+        IsDisabling = false;
+        ConfigureTrail();
+
+    }
+    
+    void Awake()
+    {
+        Trail = GetComponent<TrailRenderer>();
+    }
+
+
     void Start()
     {
         StartCoroutine(ExplodeAfterDelay());
+        ConfigureTrail();
     }
+
+
+    private void ConfigureTrail()
+    {
+        if (Trail != null && TralConfig != null)
+        {
+            TralConfig.SetupTrail(Trail);
+        }
+    }
+
 
     public void SetAttacker(int actorNr)
     {
@@ -54,7 +89,7 @@ public class GrenadeProjectile : MonoBehaviourPun
     {
         if (hasExploded) return;
         hasExploded = true;
-        
+
         if (explosionSound != null)
         {
             AudioSource.PlayClipAtPoint(explosionSound, transform.position);
@@ -89,7 +124,7 @@ public class GrenadeProjectile : MonoBehaviourPun
     [PunRPC]
     void MasterHandleExplosion(Vector3 explosionPos, int attackerNr)
     {
-    // Aplicar daño
+        // Aplicar daño
         HashSet<IDamageable> alreadyDamaged = new HashSet<IDamageable>();
 
         Collider[] colliders = Physics.OverlapSphere(explosionPos, explosionRadius);
@@ -121,9 +156,36 @@ public class GrenadeProjectile : MonoBehaviourPun
     }
 
 
+    protected void OnDisable()
+    {
+        CancelInvoke(DO_DISABLE_METHOD_NAME);
+        Renderer.enabled = false;
+
+        if (Trail != null && TralConfig != null)
+        {
+            IsDisabling = true;
+            Invoke(DO_DISABLE_METHOD_NAME, TralConfig.Time);
+        }
+        else
+        {
+            DoDisable();
+        }
+    }
+
+    void DoDisable() {
+        if (Trail != null && TralConfig != null)
+        {
+            Trail.Clear();
+        }
+
+        gameObject.SetActive(false);
+    }
+
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, explosionRadius);
     }
+    
 }

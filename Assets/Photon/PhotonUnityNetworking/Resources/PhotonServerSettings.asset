@@ -55,6 +55,7 @@ MonoBehaviour:
   - RPC_ShowHitFX
   - RPC_PlayShotSound
   - RPC_ShowDeathFX
+  - RPC_SpawnImpactEffect
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

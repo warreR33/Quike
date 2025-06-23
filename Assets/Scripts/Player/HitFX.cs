@@ -8,9 +8,10 @@ public class HitFX : MonoBehaviourPun
     [SerializeField] private GameObject damageEffectPrefab;
     [SerializeField] private Transform particleSpawnPoint;
 
+
+
     public void ShowDamage()
     {
-        Debug.Log("Si, si senor");
         photonView.RPC("RPC_ShowHitFX", RpcTarget.All, particleSpawnPoint.position);
     }
 

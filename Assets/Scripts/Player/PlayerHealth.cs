@@ -22,6 +22,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private GameManager gameManager;
 
+    private bool isDead = false;
+
 
     private void Start()
     {
@@ -53,9 +55,15 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
         }
     }
 
+    public bool GetIsDead()
+    {
+        return isDead;
+    }
 
     public void TakeDamage(int damage, int attackerActorNr)
     {
+        if (isDead) return;
+
         if (photonView.IsMine)
         {
             ApplyDamage(damage, attackerActorNr);
@@ -77,6 +85,7 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
     [PunRPC]
     void RPC_ApplyDamage(int damage, int attackerActorNr)
     {
+        if (!photonView.IsMine || isDead) return;
 
         ApplyDamage(damage, attackerActorNr);
 
@@ -94,6 +103,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
     private void ApplyDamage(int damage, int attackerActorNr)
     {
+        if (isDead) return;
+
         currentHealth -= damage;
 
         if (photonView.IsMine)
@@ -104,6 +115,8 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
         if (currentHealth <= 0)
         {
+            isDead = true;
+
             //PlayerHealth attackerHealth = null;
             string killerName = "Player";
 

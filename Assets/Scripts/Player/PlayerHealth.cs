@@ -5,8 +5,6 @@ using Photon.Pun;
 using System;
 using TMPro;
 using UnityEngine.UI;
-using Photon.Realtime;
-
 
 public class PlayerHealth : MonoBehaviourPun, IDamageable
 {
@@ -62,12 +60,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             if (damageFx != null)
                 damageFx.ShowDamage();
-<<<<<<< Updated upstream
-=======
-                
-              if (hitFX != null)
-                hitFX.ShowDamage();
->>>>>>> Stashed changes
         }
         else
         {
@@ -98,59 +90,36 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
             UpdateHealthUI();
         }
 
+
         if (currentHealth <= 0)
         {
+            //PlayerHealth attackerHealth = null;
             string killerName = "Player";
 
-            //Player attackerPlayer = PhotonNetwork.CurrentRoom.GetPlayer(attackerActorNr);
-            Photon.Realtime.Player attackerPlayer = PhotonNetwork.CurrentRoom.GetPlayer(attackerViewID);
+            PhotonView attackerView = PhotonView.Find(attackerViewID);
 
-
-            if (attackerPlayer != null)
+            if (attackerView != null)
             {
-                if (attackerPlayer.ActorNumber != photonView.OwnerActorNr)
+
+                int attackerActorNr = attackerView.OwnerActorNr;
+
+                //Sincronizamos kills
+                //Solo sumar kill si no se mato a si mismo
+                if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
                 {
-                    gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerPlayer.ActorNumber);
+                    gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
                 }
 
-                killerName = attackerPlayer.NickName;
+                killerName = attackerView.Owner.NickName;
+
             }
 
+            //Sincronizamos Deaths
             gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
+
+
             Die(killerName);
         }
-
-        //if (currentHealth <= 0)
-        //{
-        //    //PlayerHealth attackerHealth = null;
-        //    string killerName = "Player";
-
-        //    PhotonView attackerView = PhotonView.Find(attackerViewID);
-
-
-
-        //    if (attackerView != null)
-        //    {
-
-        //        int attackerActorNr = attackerView.OwnerActorNr;
-
-        //        //Sincronizamos kills
-        //        //Solo sumar kill si no se mato a si mismo
-        //        if (attackerActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
-        //        {
-        //            gameManager.photonView.RPC("RPC_AddKill", RpcTarget.All, attackerActorNr);
-        //        }
-
-        //        killerName = attackerView.Owner.NickName;
-
-        //    }
-
-        //    //Sincronizamos Deaths
-        //    gameManager.photonView.RPC("RPC_AddDeath", RpcTarget.All, photonView.OwnerActorNr);
-
-
-        //    Die(killerName);
-        //}
     }
 
 
@@ -175,15 +144,6 @@ public class PlayerHealth : MonoBehaviourPun, IDamageable
 
             }
 
-<<<<<<< Updated upstream
-=======
-            if (deathEffectPrefab != null)
-            {
-                GameObject fx = Instantiate(deathEffectPrefab, transform.position, Quaternion.identity);
-                Destroy(fx, 3f); 
-            }
-
->>>>>>> Stashed changes
             if (gameObject != null)
             {
                 PhotonNetwork.Destroy(gameObject);

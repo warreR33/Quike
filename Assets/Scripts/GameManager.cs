@@ -19,6 +19,8 @@ public class GameManager : MonoBehaviourPunCallbacks
     private GameObject gameEndUIInstance;
 
     [SerializeField] private Transform[] spawnPoints;
+    private List<Transform> usedSpawnPoints = new List<Transform>();
+
     [SerializeField] private int maxGameKills= 5;
 
     private bool isWinner = false;
@@ -298,8 +300,21 @@ public class GameManager : MonoBehaviourPunCallbacks
 
     private Transform GetRandomSpawnPoint()
     {
-     
-        return spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+        //return spawnPoints[Random.Range(0, spawnPoints.Length)];
+
+        List<Transform> availableSpawnPoints = spawnPoints.Except(usedSpawnPoints).ToList();
+
+        //Si ya se usaron todos, reiniciar la lista
+        if (availableSpawnPoints.Count == 0)
+        {
+            usedSpawnPoints.Clear();
+            availableSpawnPoints = spawnPoints.ToList();
+        }
+
+        Transform chosenPoint = availableSpawnPoints[Random.Range(0, availableSpawnPoints.Count)];
+        usedSpawnPoints.Add(chosenPoint);
+        return chosenPoint;
 
     }
 
@@ -381,7 +396,7 @@ public class GameManager : MonoBehaviourPunCallbacks
      while (PhotonNetwork.InRoom)
           yield return null;
 
-      SceneManager.LoadScene("MainMenu");
+      SceneManager.LoadScene("LobbyScene");
     }
 
 

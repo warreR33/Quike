@@ -14,7 +14,7 @@ public class LoadingRoomManager : MonoBehaviourPunCallbacks
     [SerializeField] private Slider countdownSlider;
 
 
-    private const float totalCountdownTime = 5f;
+    [SerializeField] private float totalCountdownTime = 5f;
 
     private bool countdownStarted = false;
     private double startTime;

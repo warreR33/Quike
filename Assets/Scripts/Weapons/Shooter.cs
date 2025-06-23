@@ -136,7 +136,7 @@ public class Shooter : MonoBehaviour
 
                 GameObject projectile = PhotonNetwork.Instantiate(projectilePrefab.name, shootPoint.position, Quaternion.LookRotation(direction));
                 //projectile.GetComponent<Projectile>().SetAttacker(photonView.ViewID);
-                projectile.GetComponent<GrenadeProjectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
+                projectile.GetComponent<Projectile>().SetAttacker(PhotonNetwork.LocalPlayer.ActorNumber);
 
 
                 // Sonido sincronizado

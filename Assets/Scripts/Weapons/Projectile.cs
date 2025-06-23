@@ -11,6 +11,23 @@ public class Projectile : MonoBehaviourPun
 
     private int attackerActorNumber;
 
+<<<<<<< Updated upstream
+=======
+    protected const string DO_DISABLE_METHOD_NAME = "DoDisable";
+
+    void Awake()
+    {
+        Trail = GetComponent<TrailRenderer>();
+    }
+
+    protected virtual void OnEnable()
+    {
+        Renderer.enabled = true;
+        IsDisabling = false;
+        ConfigureTrail();
+
+    }
+>>>>>>> Stashed changes
     private void Start()
     {
         //Destruimos el objeto si no toco nada en un tiempo
@@ -18,7 +35,7 @@ public class Projectile : MonoBehaviourPun
         {
             StartCoroutine(DestroyAfterTime());
         }
-
+        ConfigureTrail();
     }
 
     private IEnumerator DestroyAfterTime()
